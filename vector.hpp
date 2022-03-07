@@ -23,30 +23,44 @@ namespace ft
         
         public:
         ///CONSTRUCTEUR////
-           explicit vector(const allocator_type& alloc = allocator_type()) :  _alloc(alloc) , _max_alloc(_alloc.max_size()), _capacity(0), _size(0) , _p(NULL)          // default
-            {}
+           explicit vector(const allocator_type& alloc = allocator_type()) :  _alloc(alloc) , _max_alloc(_alloc.max_size()), _capacity(0), _size(0) , _p(_alloc.allocate(0))          // default
+            {
 
-        template<class InputIterator> // range
-        vector(InputIterator firtst, InputIterator last, const allocator_type&  alloc  = allocator_type()) :  _alloc(alloc) , _max_alloc(alloc.max_size())
-        {
-            _size = std::distance(firtst, last);
-            _p = _alloc.allocate(_size);
-            for (size_t i = 0; i < _size; i++)
-                _p[i] = firtst[i];
-            _capacity = _size;
-        }
-    
-        explicit vector (size_type n, const value_type& val = value_type(), // vector
+            }
+
+
+        explicit vector (size_type n, const T& val = T(), // vector
                  const allocator_type& alloc = allocator_type())  : _alloc(alloc) , _max_alloc(alloc.max_size()), _capacity(n), _size(n)
                  {
-                    _p = alloc.allocate(_size);
-                    _alloc = _size;
+                     std::cout << "A" << std::endl;
+                    _p = _alloc.allocate(_size);
                     for (size_t i = 0; i < n; i++)
                         _p[i] = val;
                     
                  }
+/*
+        template<class InputIterator> // range
+        vector(InputIterator first, InputIterator last, const allocator_type&  alloc  = allocator_type()) :  _alloc(alloc) , _max_alloc(alloc.max_size())
+        {
+
+            std::cout << "B" << std::endl;
+                _size =0;
+                while (first != last)
+                {
+                    _size++;
+                    last--;
+                }
+                
+            _p = _alloc.allocate(_size);
+            for (size_t i = 0; i < _size; i++)
+                _p[i] = first++;
+            _capacity = _size;
+        }
+    
+*/
         vector(const vector& vec) :  _alloc(vec._alloc) , _max_alloc(_alloc.max_size()) , _size(vec._size), _capacity(vec._capacity)
         {
+            _p = _alloc.allocate(_size);
             for (size_t i = 0; i < _size; i++)
                 _p[i] = vec[i];
         }
@@ -54,21 +68,22 @@ namespace ft
         {
             this->clear();
             _alloc.deallocate(_p, _capacity);
-
         }
         vector& operator= (const vector& x)
         {
             if (this != &x)
             {
                 this->clear();
+                
                 if (_capacity < x._capacity)
                 {
+                    _alloc.deallocate(_p ,_capacity);
                     _p = _alloc.allocate(x._capacity - _capacity, _p);
                     _capacity = x._capacity;
                 }
                 _size = x._size; 
                 for(size_type i = 0; i < _size ; i++)
-                    _p[0] = x._p[0];
+                    _p[i] = x._p[i];
             }
             return *this;  
         }
@@ -103,16 +118,27 @@ namespace ft
         void reserve (size_type n)
         {
             if (n > _capacity)
-            {
-                T *tmp;
-                this->clear();
+            {   
+                   
+              _alloc.deallocate(_p  ,_capacity);
+               this->clear();
+               _p =  _alloc.allocate(n, _p);
+                 std::cout << "aaaa" << std::endl;
+           //     _p[_size] = _size * 10;
+              //  _size += 1;
 
-                tmp = _alloc.allocate(n);
-                for (size_t i = 0; i < _size ; i++)
-                    tmp[i] = _p[i];
-                _alloc.deallocate(_p, _capacity);
+                for (size_t i = 0; i < _size; i++)
+                {
+                    std::cout << i << " {"  << _p[i]  << "} ,";
+                }
+                
+                  std::cout << "un" << std::endl;
+
+                  std::cout << "deux" << std::endl;
+        //        for (size_t i = 0; i < _size ; i++)
+           //          (void)_p[i];
+          //      _alloc.deallocate(_p, _capacity);
                 _capacity = n;
-                _p = tmp;
             }
         }
         ///ACCESS///
@@ -135,7 +161,29 @@ namespace ft
     reference back() {return _p[_size];}
     const_reference back() const {return _p[_size];}
     ///MODIFIERS///
-    void push_back(const T& x);
+    void push_back(const T& x) {
+
+        if (_capacity > _size)
+        {
+            _p[_size++] = x;
+            return;
+        }
+        else
+        {
+            T* tmp;
+            tmp = _alloc.allocate(_capacity * 2);
+            for (size_t i = 0; i < _size; i++)
+            {            
+                tmp[i] = _p[i];
+
+            }
+            this->clear();
+            _alloc.deallocate(_p, _capacity);
+            _capacity *= 2;
+            _p = tmp; 
+        }
+                    _p[_size++] = x;
+    };
     void pop_back();
     iterator insert(iterator position, const T& x);
     void insert(iterator position, size_type n, const T& x);
