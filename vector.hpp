@@ -32,11 +32,9 @@ namespace ft
         explicit vector (size_type n, const T& val = T(), // vector
                  const allocator_type& alloc = allocator_type())  : _alloc(alloc) , _max_alloc(alloc.max_size()), _capacity(n), _size(n)
                  {
-                     std::cout << "A" << std::endl;
-                    _p = _alloc.allocate(_size);
+                    _p = _alloc.allocate(_size, _p);
                     for (size_t i = 0; i < n; i++)
                         _p[i] = val;
-                    
                  }
 /*
         template<class InputIterator> // range
@@ -175,21 +173,79 @@ namespace ft
             for (size_t i = 0; i < _size; i++)
             {            
                 tmp[i] = _p[i];
-
             }
-            this->clear();
+             this->clear();
             _alloc.deallocate(_p, _capacity);
             _capacity *= 2;
             _p = tmp; 
         }
                     _p[_size++] = x;
     };
-    void pop_back();
-    iterator insert(iterator position, const T& x);
-    void insert(iterator position, size_type n, const T& x);
-    template <class InputIterator>
-        void insert(iterator position,
-    InputIterator first, InputIterator last);
+    void pop_back()
+    {
+        _alloc.destroy(_p[--_size]);
+    };
+    iterator insert(iterator position, const T& x)
+    {
+    std::cout << "avant" << std::endl;
+    for (size_t i = 0; i < _size; i++)
+     {
+         std::cout << i << "  " << _p[i] <<"  " <<   x <<std::endl;
+     }
+        if (_capacity > _size)
+        {
+            T s;
+            ++_size;
+            for (size_t i = 0; i <_size; i++)       
+                if (position != (this->begin() + i))
+                {
+                    s = _p[i];
+                    _p[i] = x;
+                    for (size_t n = i + 1; n <_size; n++)
+                    {
+                            _p[n] ^= s;
+                            s     ^= _p[n];
+                            _p[n] ^= s;
+                    }       
+                    return position;
+                }
+        }
+        else
+        {
+            T* tmp;
+            tmp = _alloc.allocate(_capacity * 2);
+            int a = 0;
+            _size++;
+            for (size_t i = 0; i < _size; i++)
+            {        
+                if (position != (this->begin() + i))
+                {
+                    std::cout << "aa" << std::endl;
+                    tmp[i] = _p[i - a];
+                }
+                else
+                {
+                    tmp[i] = x;
+                    a = 1;
+                }
+
+            }
+             this->clear();
+            _alloc.deallocate(_p, _capacity);
+            _capacity *= 2;
+            _p = tmp; 
+        } 
+            std::cout << "apres" << std::endl;
+        for (size_t i = 0; i < _size; i++)
+        {
+             std::cout << i << "  " << _p[i] <<"  " <<   x <<std::endl;
+        }
+        return position;
+    }
+    void insert(iterator position, size_type n, const T& x);	
+//    template <class InputIterator>
+//    void insert (iterator position, InputIterator first, InputIterator last);
+
     iterator erase(iterator position);
     iterator erase(iterator first, iterator last);
     void swap(vector &x);
