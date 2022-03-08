@@ -185,19 +185,15 @@ namespace ft
     {
         _alloc.destroy(_p[--_size]);
     };
+
     iterator insert(iterator position, const T& x)
     {
-    std::cout << "avant" << std::endl;
-    for (size_t i = 0; i < _size; i++)
-     {
-         std::cout << i << "  " << _p[i] <<"  " <<   x <<std::endl;
-     }
         if (_capacity > _size)
         {
             T s;
             ++_size;
             for (size_t i = 0; i <_size; i++)       
-                if (position != (this->begin() + i))
+                if (position == (this->begin() + i))
                 {
                     s = _p[i];
                     _p[i] = x;
@@ -220,7 +216,6 @@ namespace ft
             {        
                 if (position != (this->begin() + i))
                 {
-                    std::cout << "aa" << std::endl;
                     tmp[i] = _p[i - a];
                 }
                 else
@@ -235,20 +230,108 @@ namespace ft
             _capacity *= 2;
             _p = tmp; 
         } 
-            std::cout << "apres" << std::endl;
-        for (size_t i = 0; i < _size; i++)
-        {
-             std::cout << i << "  " << _p[i] <<"  " <<   x <<std::endl;
-        }
         return position;
     }
-    void insert(iterator position, size_type n, const T& x);	
+
+    void insert(iterator position, size_type n, const T& x)
+    {
+                _size += n;
+        if (_capacity >= _size)
+        {
+            
+            for (size_t i = 0; i < _size; i++)
+            {    
+                if (position == (this->begin() + i))
+                {
+                    for (size_t m = _size; i + n < m; m--)
+                    {
+                            _p[m] = _p[m - n];
+                    }
+                    for (size_t v = 0; v < n; v++)
+                    {
+                        _p[v + i] = x;
+                    }
+                    return;
+                }
+            }
+        }
+        else
+        {
+            T* tmp;
+            if (_capacity * 2 < _size)
+                tmp = _alloc.allocate( _size);
+            else
+                tmp = _alloc.allocate(_capacity * 2);
+            int a = 0;
+            for (size_t i = 0; i < _size; i++)
+            {        
+                if (position != (this->begin() + i))
+                {
+                    tmp[i] = _p[i - a];
+                }
+                else
+                {
+                 for (size_type m = i; i - m < n; ++i)
+                        tmp[i] = x;
+                    i--;
+                    a = n;
+                }
+            }
+             this->clear();
+            _alloc.deallocate(_p, _capacity);
+            if (_capacity * 2 < _size)
+                _capacity = _size;
+            else
+                _capacity *= 2; 
+            _p = tmp; 
+        }
+
+    }
+
+
 //    template <class InputIterator>
 //    void insert (iterator position, InputIterator first, InputIterator last);
 
-    iterator erase(iterator position);
-    iterator erase(iterator first, iterator last);
-    void swap(vector &x);
+    iterator erase(iterator position)
+    {
+        _size--;
+        for (size_t i = 0; i < _size; i++)
+            if (position == (this->begin() + i))
+            {
+                _alloc.destroy(&_p[i--]);
+                while (i++ < _size)
+                    _p[i] = _p[i + 1];
+        
+                return position;
+            }
+        return position;
+    }
+    
+    iterator erase(iterator first, iterator last)
+    {
+       for (size_t i = 0; i < _size; i++)
+            if (first == (this->begin() + i))
+            {
+                size_t n = 0;
+                for ( n = 0; (i + n) + (this->begin()) != last; n++)
+                {
+                     _alloc.destroy(&_p[i + n]);
+                     --_size;
+                }
+                --i;
+                while (i++ < _size)
+                    _p[i] = _p[i + n];
+        
+                return first;
+            }
+        return first;
+    }
+    void swap(ft::vector<T> &x)
+    {
+        *this ^= x;
+        x ^= *this;
+        *this ^= x;
+    }
     void clear()
     {
             for(size_t i = 0; i < _capacity; i++)

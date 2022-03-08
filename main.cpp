@@ -3,27 +3,39 @@
 
 int main()
 {
-   // int n[] = {10,20,30,40,50,60,70,80,90,100,110};
-   // ft::vector<int> l(n , n+10);
-        ft::vector<int>  d(10, 12);
-   //   std::vector<int>  a(10, 12);
+      //int n[] = {10,20,30,40,50,60,70,80,90,100,110};
+   //   ft::vector<int> l(n , n+10);
+      ft::vector<int>  d(10, 12);
+      std::vector<int>  a(10, 12);
+            ft::vector<int>  dd(10, 12);
+      std::vector<int>  dd(10, 12);
+  //   d.insert(d.begin(), 112);
+  //   a.insert(a.begin(), 112);
+     d.insert(d.begin(), 5, 100);
+     a.insert(a.begin(), 5 ,  100);
+    std::vector<int>::iterator t = a.begin();
+      ft::vector<int>::iterator e = d.begin();
+     d.insert(e+15, 4, -6);
+     a.insert(t+15, 4 ,  -6);
 
-     d.insert(d.begin(), 100);
-   //  a.insert(a.begin(),100);
-     ///std::vector<int>::iterator t = a.begin();
-     ft::vector<int>::iterator e = d.begin();
-   //  a.insert( t + 5,100);
-      d.insert( e + 5,100);
-//    for (size_t i = 0; i < a.size(); i++)
-  //   {
-      //   std::cout << i << "  " << a[i] << std::endl;
-    // }
+//     std::cout << "t "<<*t << std::endl;
+  //   std::cout << "e "<< *e << std::endl;
+
+      a.erase(t + 2);
+      d.erase(e + 2);
+      d.erase(e+3, e+5);
+      a.erase(t+3, t+5);
      std::cout << std::endl;
-         for (size_t i = 0; i < d.size(); i++)
-     {
-         std::cout << i << "  " << d[i] << std::endl;
-     }
-    return 0;
+        for (size_t i = 0; i < d.size(); i++)
+        {
+            std::cout << "d "<< i << "  " << d[i] << std::endl;
+            std::cout << "a "<<i << "  " << a[i] << std::endl << std::endl;
+        }
+    std::cout <<  "d " << d.capacity() << " " << d.size() << std::endl;
+    std::cout <<  "a " << a.capacity() << " " << a.size() << std::endl;
+    dd.swap(d);
+    aa.swap(a);
+    return (0);
     /* 
     d = l;
 
