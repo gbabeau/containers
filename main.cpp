@@ -3,7 +3,17 @@
 
 int main()
 {
-      //int n[] = {10,20,30,40,50,60,70,80,90,100,110};
+    int n[] = {10,20,30,40,50,60,70,80,90,100,110};
+       ft::vector<int> l(n , n+10);
+        std::vector<int> a(n , n+10);
+        std::vector<int>::iterator ls(a.begin());
+       std::cout << ls.base() << std::endl;
+        l.insert(l.begin(), 4 , 3);
+      //  a.insert(0, n+1, n+5);
+       // a.insert(a.begin(), n+1, n+5);
+     //   std::cout << l[0] << "  " << l[9] << std::endl;
+       // std::cout << a[0] << "  " << a[9] << std::endl;
+           /*   //int n[] = {10,20,30,40,50,60,70,80,90,100,110};
    //   ft::vector<int> l(n , n+10);
       ft::vector<int>  d(10, 12);
       std::vector<int>  a(10, 12);
@@ -36,7 +46,6 @@ int main()
     dd.swap(d);
     aa.swap(a);
     return (0);
-    /* 
     d = l;
 
 
@@ -55,5 +64,6 @@ int main()
     //    std::cout << "l["  << i << "] = " << l[i] << " ";
     //}
     */
+
     return 0;
 }
