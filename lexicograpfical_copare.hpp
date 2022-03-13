@@ -9,13 +9,12 @@ template <class InputIterator1, class InputIterator2>
                                     
                     while (first1!=last1)
                         {
-                            if (*first2 !=*first1) 
+                            if (!(*first2 == *first1)) 
                                 return false;
-                            ++first1; ++first2;
+                            ++first1; 
+                            ++first2;
                         }
                     return (true);
-
-
         }
 
 
@@ -27,7 +26,7 @@ template <class InputIterator1, class InputIterator2, class BinaryPredicate>
                 {
                     while (first1!=last1)
                         {
-                            if (!pred(*first1, *first2)) 
+                            if (pred(*first1, *first2)) 
                                 return false;
                             ++first1; ++first2;
                         }
