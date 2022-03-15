@@ -1,3 +1,5 @@
+#ifndef VECTOR_HPP
+#endif 
 #include "iterator.hpp"
 #include <memory>
 #include <stdexcept>
@@ -107,14 +109,25 @@ namespace ft
         {
             if (n > _capacity)
             {
-                this->reserve(n);
+                            if ( _capacity < _size + n)
+            {
+                if (_capacity * 2 <  n)
+                    this->reserve(n);
+                else
+                    this->reserve(_capacity * 2);
+            }
                 for (size_t i = _size; i < n ; i++)
                     this->_alloc.construct(&_p[i] , val); 
                 _size = n;
             }
             else if ( n < _capacity)
             {
-                for (size_t i = n ; i < _size  ; i++)
+             if (n > _size)
+             {
+                for (size_t i = _size ; i < n  ; i++)
+                    this->_alloc.construct(&_p[i] , val); 
+             } else if ( n < _size)
+                    for (size_t i = n ; i < _size ; i++)
                     _alloc.destroy(&_p[i]);
                  _size = n;
             }
@@ -125,6 +138,8 @@ namespace ft
         bool empty() const { return (_size == 0);} 
         void reserve (size_type n)
         {
+            if (n > _max_alloc)
+                throw std::length_error("vector::reserve");
             if (n > _capacity)
             {   
                 size_t size = _size;
@@ -132,8 +147,8 @@ namespace ft
                T* tmp;
 
   
-               tmp =  _alloc.allocate(n, _p);
-
+               tmp =  _alloc.allocate(n);
+                
                 for (size_t i = 0; i < _size; i++)
                 {
                     _alloc.construct(&tmp[i], _p[i]);
@@ -237,19 +252,29 @@ namespace ft
 
     void insert(iterator position, size_type n, const T& x)
     {
-                _size += n;
+                
+        
+                   
+                    if (n == 0)
+                        return ;
                 size_type dst = std::distance(this->begin(), position);
-            if ( _capacity < _size)
+                   
+            if ( _capacity < _size + n)
             {
-                if (_capacity * 2 < _size)
-                    this->reserve( _size);
+                if (_size * 2 < _size + n)
+                    this->reserve( _size + n);
                 else
-                    this->reserve(_capacity * 2);
+                    this->reserve(_size * 2);
             }
+            
+            _size += n;
+                            
 
                     for (size_t m = _size - 1; n + dst <= m; m--)
-                    {
-                            _p[m] = _p[m - n];
+                        {  
+                            //_p[m] = _p[m - n];
+                            _alloc.construct(&_p[m], _p[m - n]);
+                            _alloc.destroy(&_p[m - n]);
  
                     }
                     for (size_t v = 0; v < n; v++)
@@ -266,9 +291,10 @@ namespace ft
     void insert (iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL )
     {
         size_type n = std::distance(first, last);
-        _size += n;
-        if (_capacity >= _size)
+        size_type dst = std::distance(this->begin(), position);
+        if (_capacity >= _size + n)
         {
+            _size += n;
             
             for (size_t i = 0; i < _size; i++)
             {    
@@ -276,7 +302,8 @@ namespace ft
                 {
                     for (size_t m = _size -1; i + n <= m; m--)
                     {
-                            _p[m] = _p[m - n];
+                            _alloc.construct(&_p[m], _p[m - n]);
+                            _alloc.destroy(&_p[m - n]);
                     }
                     for (size_t v = 0; v < n; v++)
                     {
@@ -289,16 +316,16 @@ namespace ft
         }
         else
         {
-            size_type dst = std::distance(this->begin(), position);
-             if (_capacity * 2 < _size)
-                this->reserve( _size);
+            if (_capacity * 2 < _size + n)
+                this->reserve( _size + n);
             else
                 this->reserve(_capacity * 2);
- 
+                     _size += n;
 
                     for (size_t m = _size - 1; dst + n <= m; m--)
                     {
-                            _p[m] = _p[m - n];
+                            _alloc.construct(&_p[m], _p[m - n]);
+                            _alloc.destroy(&_p[m - n]);
                              
                     }
                     for (size_t v = 0; v < n; v++)
@@ -314,18 +341,19 @@ namespace ft
 
     iterator erase(iterator position)
     {
-        if (_size == 0 || this->end() < position)
+        if (_size == 0 || this->end() <= position)
             return position;
         
         for (size_t i = 0; i < _size; i++)
             if (position == (this->begin() + i))
             {
-
+         //       std::cout << "AAAAA" << std::endl;
                 _alloc.destroy(&_p[i]);
 
                   while (++i < _size)
                   {
-                    _p[i - 1] = _p[i];
+                      _alloc.construct(&_p[i - 1], _p[i]);
+                        _alloc.destroy(&_p[i]);
                   }
                 _size--;
                 return position;
@@ -348,7 +376,10 @@ namespace ft
                }
                size_t i = deb + dest -1;
                while (++i  < _size)
-               _p[i - dest] = _p[i];
+               {
+                    _alloc.construct(& _p[i - dest], _p[i]);
+                        _alloc.destroy(&_p[i]);
+               }
                 _size -= dest;
                 return first;
     }

@@ -1,3 +1,6 @@
+#ifndef ITERATOR_HPP
+
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -132,6 +135,7 @@ typename iterator_traits<Iterator>::reference>
     template< class TL, class TR >
     bool operator<=(const reverse_iterator<TL>& lhs, const reverse_iterator<TR>& rhs)  {return lhs.base() >= rhs.base();}
 };
+#endif
 
 
 /*
