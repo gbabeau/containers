@@ -6,8 +6,8 @@ namespace ft {
     class pair
     {
     public:
-        typedef first_type T1;
-        typedef second_type T2;
+        typedef  T1 first_type;
+        typedef  T2 second_type;
 
 
 
@@ -29,4 +29,13 @@ namespace ft {
     first_type first;
     second_type seconde;
     };
+
+    template <class T1,class T2>
+    pair<T1,T2> make_pair (T1 x, T2 y)
+    {
+        return ( pair<T1,T2>(x,y) );
+    }
+
+
+    
 }
