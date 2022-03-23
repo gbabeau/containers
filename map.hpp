@@ -9,13 +9,22 @@
 #include "lexicograpfical_copare.hpp"
 #include "pair.hpp"
 namespace ft {
+template <class T>
+struct node
+{   
+    T type;
+    node* left;
+    node* rigth;
+    node *parents;
+};
+
 template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
 public:
 // types:
 typedef Key key_type;
 typedef T mapped_type;
-typedef pair<const Key, T> value_type;
+typedef ft::pair<const Key, T> value_type;
 typedef Compare key_compare;
 typedef Allocator allocator_type;
 typedef typename Allocator::reference reference;
@@ -52,15 +61,19 @@ return comp(x.first, y.first);
 explicit map(const Compare& comp = Compare(),
 const Allocator& = Allocator())
 {
+   _node = NULL;
     (void) comp;
 }
 template <class InputIterator>
 map(InputIterator first, InputIterator last,
 const Compare& comp = Compare(), const Allocator& = Allocator());
 map(const map<Key,T,Compare,Allocator>& x)
-{}
+{
+    (void)x;
+}
 ~map()
-{}
+{   
+}
 map<Key,T,Compare,Allocator>&
 operator=(const map<Key,T,Compare,Allocator>& x);
 // iterators:
@@ -79,7 +92,16 @@ size_type max_size() const;
 // 23.3.1.2 element access:
 T& operator[](const key_type& x);
 // modifiers:
-pair<iterator, bool> insert(const value_type& x);
+ft::pair<iterator, bool> insert(const value_type& x)
+{
+    std::allocator<ft::node<value_type> > _a;
+    if (_node == NULL)
+    {
+        _node = _a.allocate(1);
+        _node->T = x;
+    }
+    return ft::pair<iterator, bool>();
+}
 iterator insert(iterator position, const value_type& x);
 template <class InputIterator>
 void insert(InputIterator first, InputIterator last);
@@ -104,6 +126,10 @@ ft::pair<iterator,iterator>
 equal_range(const key_type& x);
 ft::pair<const_iterator,const_iterator>
 equal_range(const key_type& x) const;
+    private:
+        node<value_type>    *_node;
+        allocator_type      _alloc;
+
 };
 
 template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);

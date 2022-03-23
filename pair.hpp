@@ -9,25 +9,27 @@ namespace ft {
         typedef  T1 first_type;
         typedef  T2 second_type;
 
-
+        first_type first;
+        second_type seconde;
 
     pair();
-    template<class U, class V> pair (const pair<U,V>& pr)
-    {
 
+    template<class U, class V> pair (const pair<U,V>& pr) : first(pr.first), seconde(pr.seconde)
+    {       
     }
     pair (const first_type& a, const second_type& b)
     {
-
+        this->first = a;
+        this->seconde = b;
     }
 
     pair& operator= (const pair& pr)
     {
-
+        this->first = pr.first;
+        this->seconde = pr.seconde;
     }
 
-    first_type first;
-    second_type seconde;
+
     };
 
     template <class T1,class T2>

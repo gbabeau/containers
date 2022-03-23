@@ -5,7 +5,8 @@ int main()
   ft::map<int , int> a;
   std::map<int , int> b;
 
-
+  a.insert(ft::pair<const int, int>(10, 100));
+  b.insert(std::pair<int, int>(10, 100));
 
   return (0);
 }
