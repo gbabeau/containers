@@ -4,9 +4,15 @@ int main()
 {
   ft::map<int , int> a;
   std::map<int , int> b;
-
+  std::pair<const int, int> e(10, 100);
+ //std::pair<const int, int> u(10,100);
   a.insert(ft::pair<const int, int>(10, 100));
-  b.insert(std::pair<int, int>(10, 100));
+  b.insert(e);
+
+ // u = e;
+
+
+
 
   return (0);
 }

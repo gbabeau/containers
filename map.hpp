@@ -10,12 +10,25 @@
 #include "pair.hpp"
 namespace ft {
 template <class T>
-struct node
+class node
 {   
-    T type;
-    node* left;
-    node* rigth;
+    public:
+    T       type;
+    node    *left;
+    node    *rigth;
     node *parents;
+
+    node()
+    {}
+    node(T const & tt) : type(tt) , left(NULL) , rigth(NULL) , parents(NULL)  
+    {
+
+    }
+    node(node const &node) : type(node.type) , left(node.left) , rigth(node.rigth) , parents(node.parents)  
+    {
+
+    }
+    
 };
 
 template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
@@ -98,7 +111,7 @@ ft::pair<iterator, bool> insert(const value_type& x)
     if (_node == NULL)
     {
         _node = _a.allocate(1);
-        _node->T = x;
+        _a.construct(_node ,ft::node<value_type>(x));
     }
     return ft::pair<iterator, bool>();
 }

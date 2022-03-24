@@ -12,15 +12,16 @@ namespace ft {
         first_type first;
         second_type seconde;
 
-    pair();
+    pair()
+    {
+    ;        
+    }
 
     template<class U, class V> pair (const pair<U,V>& pr) : first(pr.first), seconde(pr.seconde)
     {       
     }
-    pair (const first_type& a, const second_type& b)
+    pair (const first_type& a, const second_type& b) : first(a), seconde(b)
     {
-        this->first = a;
-        this->seconde = b;
     }
 
     pair& operator= (const pair& pr)
