@@ -7,6 +7,11 @@ int main()
   std::pair<const int, int> e(10, 100);
  //std::pair<const int, int> u(10,100);
   a.insert(ft::pair<const int, int>(10, 100));
+   a.insert(ft::pair<const int, int>(11, 1000));
+    b.insert(std::pair<const int, int>(10, 100));
+  std::cout << b[8] << std::endl;
+    std::cout << a[10] << std::endl;
+        std::cout << a[11] << std::endl;
   b.insert(e);
 
  // u = e;

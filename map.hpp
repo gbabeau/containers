@@ -24,6 +24,10 @@ class node
     {
 
     }
+    node(T const & tt, node parentss) : type(tt) , left(NULL) , rigth(NULL) , parents(parentss)  
+    {
+
+    }
     node(node const &node) : type(node.type) , left(node.left) , rigth(node.rigth) , parents(node.parents)  
     {
 
@@ -103,7 +107,23 @@ bool empty() const;
 size_type size() const;
 size_type max_size() const;
 // 23.3.1.2 element access:
-T& operator[](const key_type& x);
+T& operator[](const key_type& x)
+{
+    node<value_type> *tmp = _node;
+
+    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+
+    if (tmp->type.first == x)
+        return tmp->type.seconde;
+    T *a = new T();
+    return *a;
+}
 // modifiers:
 ft::pair<iterator, bool> insert(const value_type& x)
 {
@@ -113,9 +133,37 @@ ft::pair<iterator, bool> insert(const value_type& x)
         _node = _a.allocate(1);
         _a.construct(_node ,ft::node<value_type>(x));
     }
+    else
+    {
+        node<value_type> *tmp = _node;
+        do
+        {
+            if (tmp->type.first > x.first)
+            {
+                 if (tmp->left == NULL)
+                {
+                     _a.construct(tmp->left ,ft::node<value_type>(x));
+                    tmp->left->parents = tmp;
+                }
+                tmp = tmp->left;
+            }
+            else
+            {
+                if (tmp->rigth == NULL)
+                {
+
+                    tmp->rigth = _a.allocate(1);
+                _a.construct(tmp->rigth ,ft::node<value_type>(x));
+                tmp->rigth->parents = tmp;
+                }
+                tmp = tmp->rigth;
+            }
+        } while (tmp->left != NULL || tmp->rigth != NULL);
+    }
     return ft::pair<iterator, bool>();
 }
 iterator insert(iterator position, const value_type& x);
+
 template <class InputIterator>
 void insert(InputIterator first, InputIterator last);
 void erase(iterator position);
