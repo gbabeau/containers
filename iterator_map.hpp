@@ -34,12 +34,12 @@ template< class T >
 
     template<class U>
     Iterator& operator=(const Iterator<U>& mit){ p = mit.base(); return *this;}
-    pointer operator->() const {return &(operator*());}
+    pointer operator->() const {return &(p->type);}
    reference operator*() const {return *p;}
     reference operator[](difference_type n){return p[n];}
     Iterator& operator+=(difference_type n){ p += n; return *this;}
     Iterator& operator-=(difference_type n){ p -= n; return *this;}
-    Iterator& operator++() {++p; return *this;}
+    Iterator& operator++() { ; return *this;}
     Iterator operator++(int) {Iterator tmp(*this); operator++(); return tmp;}
     Iterator& operator--() {--p; return *this;}
     Iterator operator--(int) {Iterator tmp(*this); operator--(); return tmp;}

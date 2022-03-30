@@ -5,15 +5,31 @@ int main()
   ft::map<int , int> a;
   std::map<int , int> b;
   std::pair<const int, int> e(10, 100);
- //std::pair<const int, int> u(10,100);
-  a.insert(ft::pair<const int, int>(10, 100));
-   a.insert(ft::pair<const int, int>(11, 1000));
-    b.insert(std::pair<const int, int>(10, 100));
-  std::cout << b[8] << std::endl;
-    std::cout << a[10] << std::endl;
-        std::cout << a[11] << std::endl;
-  b.insert(e);
 
+  a.insert(ft::pair<const int, int>(10, 100));
+  a.insert(ft::pair<const int, int>(11, 1000));
+    b.insert(std::pair<const int, int>(1, 100));
+     b.insert(std::pair<const int, int>(3, 100));
+         b.insert(std::pair<const int, int>(5, 100));
+             b.insert(std::pair<const int, int>(7, 100));
+                 b.insert(std::pair<const int, int>(152, 100));
+                     b.insert(std::pair<const int, int>(151, 100));
+ // b.insert(e);
+  std::map<int , int>::iterator v(b.begin());
+    do
+    {
+      std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
+    } 
+    while (++v != b.end());
+
+     std::pair<const int, int> aaa(*v);
+
+
+    std::cout << aaa.first << std::endl;
+  ft::map<int , int>::iterator u(a.begin());
+          std::cout << "first = " <<  u->first << " seconde = " << u << std::endl; 
+ // v++;
+ // u++;
  // u = e;
 
 

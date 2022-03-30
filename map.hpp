@@ -18,6 +18,7 @@ class node
     node    *rigth;
     node *parents;
 
+
     node()
     {}
     node(T const & tt) : type(tt) , left(NULL) , rigth(NULL) , parents(NULL)  
@@ -32,7 +33,8 @@ class node
     {
 
     }
-    
+    T* operator->() const {return &(operator*());}
+       T& operator*() const {return type;}  
 };
 
 template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
@@ -48,8 +50,8 @@ typedef typename Allocator::reference reference;
 typedef typename Allocator::const_reference const_reference;
 
         typedef std::size_t size_type;
-        typedef ft::Iterator<T> iterator;
-        typedef ft::Iterator< const T> const_iterator;
+        typedef ft::Iterator<ft::node<value_type> > iterator;
+        typedef ft::Iterator< const ft::node<T> > const_iterator;
         typedef std::ptrdiff_t difference_type;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef  ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -94,7 +96,14 @@ map(const map<Key,T,Compare,Allocator>& x)
 map<Key,T,Compare,Allocator>&
 operator=(const map<Key,T,Compare,Allocator>& x);
 // iterators:
-iterator begin();
+iterator begin()
+{
+    node<value_type> *tmp = _node;
+
+    while (tmp->left != NULL)
+        tmp = tmp->left;
+    return (iterator(tmp));
+}
 const_iterator begin() const;
 iterator end();
 const_iterator end() const;
