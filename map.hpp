@@ -1,5 +1,6 @@
-#ifndef MAP_HPP
-#endif 
+# ifndef MAP_HPP
+#define MAP_HPP
+
 #include "iterator_map.hpp"
 #include <memory>
 #include <stdexcept>
@@ -7,35 +8,11 @@
 #include "is_integral.hpp"
 #include "enable_if.hpp"
 #include "lexicograpfical_copare.hpp"
+#include "node.hpp"
 #include "pair.hpp"
+
 namespace ft {
-template <class T>
-class node
-{   
-    public:
-    T       type;
-    node    *left;
-    node    *rigth;
-    node *parents;
 
-
-    node()
-    {}
-    node(T const & tt) : type(tt) , left(NULL) , rigth(NULL) , parents(NULL)  
-    {
-
-    }
-    node(T const & tt, node parentss) : type(tt) , left(NULL) , rigth(NULL) , parents(parentss)  
-    {
-
-    }
-    node(node const &node) : type(node.type) , left(node.left) , rigth(node.rigth) , parents(node.parents)  
-    {
-
-    }
-    T* operator->() const {return &(operator*());}
-       T& operator*() const {return type;}  
-};
 
 template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
@@ -50,8 +27,8 @@ typedef typename Allocator::reference reference;
 typedef typename Allocator::const_reference const_reference;
 
         typedef std::size_t size_type;
-        typedef ft::Iterator<ft::node<value_type> > iterator;
-        typedef ft::Iterator< const ft::node<T> > const_iterator;
+        typedef ft::Iterator< ft::node<value_type> > iterator;
+        typedef ft::Iterator< const ft::node<value_type> > const_iterator;
         typedef std::ptrdiff_t difference_type;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef  ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -212,3 +189,4 @@ template <class Key, class T, class Compare, class Allocator>bool operator<=(con
 template <class Key, class T, class Compare, class Allocator>void swap(map<Key,T,Compare,Allocator>& x,map<Key,T,Compare,Allocator>& y);
 
 }
+# endif 

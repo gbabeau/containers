@@ -1,10 +1,11 @@
 #ifndef ITERATOR_MAP_HPP
+# define ITERATOR_MAP_HPP
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include <memory>
 #include <iterator>
-
+#include "node.hpp"
 
 namespace ft
 {
@@ -17,7 +18,7 @@ template<class Iterator> struct iterator_traits {
     typedef typename Iterator::iterator_category iterator_category;
 };
 
-template< class T >
+template< class T>
     class Iterator : public std::iterator<std::random_access_iterator_tag, T>
     {
         public:
@@ -29,13 +30,13 @@ template< class T >
     public:
     Iterator() : p(NULL) {}
    explicit Iterator(T* x) : p(x) {}
-    template<class U>
-    Iterator(const Iterator<U>& mit) : p(mit.base()) {}
+    template<class V>
+    Iterator(const Iterator<V>& mit) : p(mit.base()) {}
 
-    template<class U>
-    Iterator& operator=(const Iterator<U>& mit){ p = mit.base(); return *this;}
-    pointer operator->() const {return &(p->type);}
-   reference operator*() const {return *p;}
+    template<class V>
+    Iterator& operator=(const Iterator<V>& mit){ p = mit.base(); return *this;}
+    typename T::t_type* operator->() const {return &(p->type);}
+    reference operator*() const {return *p;}
     reference operator[](difference_type n){return p[n];}
     Iterator& operator+=(difference_type n){ p += n; return *this;}
     Iterator& operator-=(difference_type n){ p -= n; return *this;}
@@ -49,6 +50,7 @@ template< class T >
     private:
         T* p;
     };
+    /*
     template< class T >
     Iterator<T> operator+(typename Iterator<T>::difference_type n, const Iterator<T> & rhs)  { return ft::Iterator<T>(&(*rhs) + n);}
     template< class TL, class TR  >
@@ -65,7 +67,7 @@ template< class T >
     bool operator>=(const Iterator<TL>& lhs, const Iterator<TR>& rhs)   {return (&(*lhs) >= &(*rhs));}
     template< class TL, class TR >
     bool operator<=(const Iterator<TL>& lhs, const Iterator<TR>& rhs)   {return (&(*lhs) <= &(*rhs));}
-
+*/
 template<class Iterator>
 class reverse_iterator : public std::iterator<typename iterator_traits<Iterator>::iterator_category,
 typename iterator_traits<Iterator>::value_type,

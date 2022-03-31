@@ -1,5 +1,5 @@
-
-
+# ifndef PAIR_HPP
+#define PAIR_HPP
 namespace ft {
 
  template<class T1 , class T2>
@@ -75,3 +75,4 @@ template <class T1, class T2> ft::pair<T1,T2> make_pair(const T1& a, const T2& b
 {
     return (new ft::pair<T1, T2>(a ,b));
 }
+# endif

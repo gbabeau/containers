@@ -14,8 +14,16 @@ int main()
              b.insert(std::pair<const int, int>(7, 100));
                  b.insert(std::pair<const int, int>(152, 100));
                      b.insert(std::pair<const int, int>(151, 100));
+              //    std::map<int , int>::iterator v(b.begin());
+                //     std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
+                     ft::map<int , int>::iterator u(a.begin());
+          std::cout << "first = " <<  u->first << " seconde = " << u->seconde << std::endl; 
  // b.insert(e);
-  std::map<int , int>::iterator v(b.begin());
+/*
+
+ 
+  if (b.begin() == b.end())
+    ;
     do
     {
       std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
@@ -26,8 +34,8 @@ int main()
 
 
     std::cout << aaa.first << std::endl;
-  ft::map<int , int>::iterator u(a.begin());
-          std::cout << "first = " <<  u->first << " seconde = " << u << std::endl; 
+  
+          */
  // v++;
  // u++;
  // u = e;
