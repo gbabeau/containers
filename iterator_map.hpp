@@ -37,15 +37,15 @@ template< class T>
     Iterator& operator=(const Iterator<V>& mit){ p = mit.base(); return *this;}
     typename T::t_type* operator->() const {return &(operator*());}
     typename T::t_type& operator*() const {return p->type;}
-    reference operator[](difference_type n){return p[n];}
-    Iterator& operator+=(difference_type n){ p += n; return *this;}
-    Iterator& operator-=(difference_type n){ p -= n; return *this;}
+   // reference operator[](difference_type n){return p[n];}
+   // Iterator& operator+=(difference_type n){ p += n; return *this;}
+   // Iterator& operator-=(difference_type n){ p -= n; return *this;}
     Iterator& operator++() { ; return *this;}
     Iterator operator++(int) {Iterator tmp(*this); operator++(); return tmp;}
     Iterator& operator--() {--p; return *this;}
     Iterator operator--(int) {Iterator tmp(*this); operator--(); return tmp;}
-    Iterator operator-(difference_type n) const { return Iterator(p - n);}
-    Iterator operator+(difference_type n) const { return Iterator(p + n);}
+    //Iterator operator-(difference_type n) const { return Iterator(p - n);}
+    //Iterator operator+(difference_type n) const { return Iterator(p + n);}
     pointer base() const {return p;}
     private:
         T* p;
