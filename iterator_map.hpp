@@ -35,8 +35,8 @@ template< class T>
 
     template<class V>
     Iterator& operator=(const Iterator<V>& mit){ p = mit.base(); return *this;}
-    typename T::t_type* operator->() const {return &(p->type);}
-    reference operator*() const {return *p;}
+    typename T::t_type* operator->() const {return &(operator*());}
+    typename T::t_type& operator*() const {return p->type;}
     reference operator[](difference_type n){return p[n];}
     Iterator& operator+=(difference_type n){ p += n; return *this;}
     Iterator& operator-=(difference_type n){ p -= n; return *this;}

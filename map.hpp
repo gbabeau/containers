@@ -111,13 +111,23 @@ T& operator[](const key_type& x)
     return *a;
 }
 // modifiers:
-ft::pair<iterator, bool> insert(const value_type& x)
+ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
 {
     std::allocator<ft::node<value_type> > _a;
+    if (node == NULL)
+    {
+         node = _a.allocate(1);
+        _a.construct(node ,ft::node<value_type>(x));
+        node->parents = node2;
+    }
+    return (node);
+}
+ft::pair<iterator, bool> insert(const value_type& x)
+{
     if (_node == NULL)
     {
-        _node = _a.allocate(1);
-        _a.construct(_node ,ft::node<value_type>(x));
+        _node = alloc_insert(x, _node, NULL);
+        _node->color = NOIR;
     }
     else
     {
@@ -125,25 +135,9 @@ ft::pair<iterator, bool> insert(const value_type& x)
         do
         {
             if (tmp->type.first > x.first)
-            {
-                 if (tmp->left == NULL)
-                {
-                     _a.construct(tmp->left ,ft::node<value_type>(x));
-                    tmp->left->parents = tmp;
-                }
-                tmp = tmp->left;
-            }
+                tmp = alloc_insert(x, tmp->left, tmp);
             else
-            {
-                if (tmp->rigth == NULL)
-                {
-
-                    tmp->rigth = _a.allocate(1);
-                _a.construct(tmp->rigth ,ft::node<value_type>(x));
-                tmp->rigth->parents = tmp;
-                }
-                tmp = tmp->rigth;
-            }
+                tmp = alloc_insert(x, tmp->rigth, tmp);
         } while (tmp->left != NULL || tmp->rigth != NULL);
     }
     return ft::pair<iterator, bool>();
