@@ -122,6 +122,51 @@ ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *no
     }
     return (node);
 }
+
+   void rotate(ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *N, ft::node<value_type> *F)
+   {
+       P->parents = GP->parents;
+       GP->parents = P;
+       
+       N = F;
+       N->parents = GP;
+
+       //GP->left = P->rigth;
+       //GP->left->parents = GP;
+        F = GP;
+        F->parents = P;
+       //P->rigth = GP;
+       //P->rigth->parents = P;
+
+   }
+void equilibre(ft::node<value_type> *tmp)
+{
+    if (tmp->parents->color == NOIR)
+        return;
+    else if (tmp->parents->parents->left->color == ROUGE && tmp->parents->parents->rigth->color == ROUGE)
+    {
+        tmp->parents->parents->left->color = NOIR;
+        tmp->parents->parents->rigth->color = NOIR;
+        tmp->parents->parents->color = ROUGE;
+    }
+    else
+    {
+        if (tmp->parents->parents->left == tmp->parents)
+        {
+            
+            if (tmp->parents->left != tmp)
+                rotate(tmp->parents, tmp, tmp->parents->rigth, tmp->left);
+            rotate(tmp->parents->parents, tmp->parents, tmp->parents->parents->left, tmp->parents->rigth);
+        }
+        else
+        {
+               if (tmp->parents->rigth != tmp)
+                       rotate(tmp->parents, tmp, tmp->parents->left, tmp->rigth);
+                rotate(tmp->parents->parents, tmp->parents, tmp->parents->parents->rigth, tmp->parents->left);
+        }
+    }
+}
+
 ft::pair<iterator, bool> insert(const value_type& x)
 {
     if (_node == NULL)
@@ -139,6 +184,7 @@ ft::pair<iterator, bool> insert(const value_type& x)
             else
                 tmp = alloc_insert(x, tmp->rigth, tmp);
         } while (tmp->left != NULL || tmp->rigth != NULL);
+        equilibre(tmp);
     }
     return ft::pair<iterator, bool>();
 }

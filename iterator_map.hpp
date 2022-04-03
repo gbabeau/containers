@@ -100,7 +100,7 @@ typename iterator_traits<Iterator>::reference>
     reverse_iterator operator-(difference_type n) const { return reverse_iterator(_current + n);}
     reverse_iterator operator+(difference_type n) const { return reverse_iterator(_current - n);}
     protected:
-        Iterator _current;
+        Iterator    _current;
     };
     
     template< class T >
