@@ -111,11 +111,107 @@ T& operator[](const key_type& x)
     return *a;
 }
 // modifiers:
+
+
+   void rotate(ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F)
+   {
+          //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+       P->parents = GP->parents;
+       GP->parents = P;
+       if (GP->left == P)
+            GP->left = F;
+        else
+            GP->rigth = F;
+        if (F != NULL)
+            F->parents = GP;
+        if (P->left == F)
+            P->left = GP;
+        else
+            P->rigth = GP;
+                 //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+       
+                          //   std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+
+       //GP->left = P->rigth;
+       //GP->left->parents = GP;
+   //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+      //  std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+       //P->rigth = GP;
+       //P->rigth->parents = P;
+
+   }
+void equilibre(ft::node<value_type> *tmp)
+{
+   std::cout << "equilibre " << tmp->parents->color << std::endl;
+
+    if (tmp->parents->color == NOIR || tmp->parents->parents == NULL)
+        return;
+    int col = ROUGE;
+
+    if (tmp->parents->parents->left == NULL || tmp->parents->parents->rigth == NULL || tmp->parents->parents->left->color == NOIR || tmp->parents->parents->rigth->color == NOIR)
+        col = NOIR;
+    if (col == ROUGE)
+    {
+        std::cout << "cas 1 equilibre" << std::endl;
+        tmp->parents->parents->left->color = NOIR;
+        tmp->parents->parents->rigth->color = NOIR;
+        tmp->parents->parents->color = ROUGE;
+    }
+    else
+    {
+        std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+        if (tmp->parents->parents->left == tmp->parents)
+        {
+            
+            if (tmp->parents->left != tmp)
+            {
+                rotate(tmp->parents, tmp,  tmp->left);
+                tmp->left->color = ROUGE;
+                tmp->rigth->color = ROUGE;
+                tmp->color = NOIR;
+                equilibre(tmp);
+            }
+            else
+            {
+            rotate(tmp->parents->parents, tmp->parents, tmp->parents->rigth);
+                std::cout << "AAAAAA" << std::endl;
+                tmp->parents->color = NOIR;
+                tmp->parents->rigth->color = ROUGE;
+                equilibre(tmp->parents);
+            }
+        }
+        else
+        {
+               if (tmp->parents->rigth != tmp)
+               {
+                       rotate(tmp->parents, tmp, tmp->rigth);
+                    rotate(tmp->parents->parents, tmp->parents,  tmp->parents->left);
+                tmp->left->color = ROUGE;
+                tmp->rigth->color = ROUGE;
+                tmp->color = NOIR;
+                equilibre(tmp);
+               }
+               else
+               {
+                   std::cout << "AAAAAA" << std::endl;
+                rotate(tmp->parents->parents, tmp->parents,  tmp->parents->left);
+                std::cout << "AAAAAA" << std::endl;
+                tmp->parents->color = NOIR;
+                std::cout << "AAAAAA" << std::endl;
+                tmp->parents->left->color = ROUGE;
+                std::cout << "AAAAAA" << std::endl;
+                equilibre(tmp->parents);
+               }
+        }   
+    }
+}
+
 ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
 {
     std::allocator<ft::node<value_type> > _a;
     if (node == NULL)
     {
+        std::cout << "insert" << std::endl;
          node = _a.allocate(1);
         _a.construct(node ,ft::node<value_type>(x));
         node->parents = node2;
@@ -123,67 +219,55 @@ ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *no
     return (node);
 }
 
-   void rotate(ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *N, ft::node<value_type> *F)
-   {
-       P->parents = GP->parents;
-       GP->parents = P;
-       
-       N = F;
-       N->parents = GP;
-
-       //GP->left = P->rigth;
-       //GP->left->parents = GP;
-        F = GP;
-        F->parents = P;
-       //P->rigth = GP;
-       //P->rigth->parents = P;
-
-   }
-void equilibre(ft::node<value_type> *tmp)
-{
-    if (tmp->parents->color == NOIR)
-        return;
-    else if (tmp->parents->parents->left->color == ROUGE && tmp->parents->parents->rigth->color == ROUGE)
-    {
-        tmp->parents->parents->left->color = NOIR;
-        tmp->parents->parents->rigth->color = NOIR;
-        tmp->parents->parents->color = ROUGE;
-    }
-    else
-    {
-        if (tmp->parents->parents->left == tmp->parents)
-        {
-            
-            if (tmp->parents->left != tmp)
-                rotate(tmp->parents, tmp, tmp->parents->rigth, tmp->left);
-            rotate(tmp->parents->parents, tmp->parents, tmp->parents->parents->left, tmp->parents->rigth);
-        }
-        else
-        {
-               if (tmp->parents->rigth != tmp)
-                       rotate(tmp->parents, tmp, tmp->parents->left, tmp->rigth);
-                rotate(tmp->parents->parents, tmp->parents, tmp->parents->parents->rigth, tmp->parents->left);
-        }
-    }
-}
-
 ft::pair<iterator, bool> insert(const value_type& x)
 {
+        std::allocator<ft::node<value_type> > _a;
     if (_node == NULL)
     {
+         std::cout << "racine mise" << std::endl;
         _node = alloc_insert(x, _node, NULL);
         _node->color = NOIR;
+            return ft::pair<iterator, bool>();
     }
     else
     {
         node<value_type> *tmp = _node;
-        do
+        while (tmp != NULL)
         {
+            std::cout << "AAAAAAAAAAAa" << std::endl;
             if (tmp->type.first > x.first)
+            {
+                    if (tmp->left == NULL)
+                    {
+                    std::cout << "insert" << std::endl;
+                        tmp->left = _a.allocate(1);
+                        _a.construct(tmp->left ,ft::node<value_type>(x));
+                    tmp->left->parents = tmp;
+                    tmp = tmp->left;
+                    break;
+                    }
+                    tmp = tmp->left;
+                /*
                 tmp = alloc_insert(x, tmp->left, tmp);
+                std::cout << "left enfant" << std::endl;
+                */
+            }
             else
-                tmp = alloc_insert(x, tmp->rigth, tmp);
-        } while (tmp->left != NULL || tmp->rigth != NULL);
+            {
+                    if (tmp->rigth == NULL)
+                    {
+                        std::cout << "insert" << std::endl;
+                        tmp->rigth = _a.allocate(1);
+                        _a.construct(tmp->rigth ,ft::node<value_type>(x));
+                        tmp->rigth->parents = tmp;
+                        tmp = tmp->rigth;
+                        break;
+                    }
+                    tmp = tmp->rigth;
+            }
+        } 
+        std::cout << "LAAAAA" <<std::endl;
+         if (tmp != NULL)
         equilibre(tmp);
     }
     return ft::pair<iterator, bool>();

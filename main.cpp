@@ -7,13 +7,19 @@ int main()
   std::pair<const int, int> e(10, 100);
 
   a.insert(ft::pair<const int, int>(10, 100));
-  a.insert(ft::pair<const int, int>(11, 1000));
-    b.insert(std::pair<const int, int>(1, 100));
-     b.insert(std::pair<const int, int>(3, 100));
-         b.insert(std::pair<const int, int>(5, 100));
-             b.insert(std::pair<const int, int>(7, 100));
-                 b.insert(std::pair<const int, int>(152, 100));
-                     b.insert(std::pair<const int, int>(151, 100));
+  a.insert(ft::pair<const int, int>(5, 1000));
+  a.insert(ft::pair<const int, int>(20, 1000));
+      a.insert(ft::pair<const int, int>(3, 1000));
+      a.insert(ft::pair<const int, int>(7, 1000));
+    a.insert(ft::pair<const int, int>(25, 1000));
+      a.insert(ft::pair<const int, int>(30, 1000));
+      a.insert(ft::pair<const int, int>(35, 1000));
+           a.insert(ft::pair<const int, int>(40, 1000));
+                a.insert(ft::pair<const int, int>(45, 1000));
+                     a.insert(ft::pair<const int, int>(50, 1000));
+                          a.insert(ft::pair<const int, int>(55, 1000));
+                               a.insert(ft::pair<const int, int>(60, 1000));
+                                    a.insert(ft::pair<const int, int>(65, 1000));
               //    std::map<int , int>::iterator v(b.begin());
                 //     std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
                      ft::map<int , int>::iterator u(a.begin());
