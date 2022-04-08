@@ -20,6 +20,13 @@ int main()
                           a.insert(ft::pair<const int, int>(55, 1000));
                                a.insert(ft::pair<const int, int>(60, 1000));
                                     a.insert(ft::pair<const int, int>(65, 1000));
+                                          a.insert(ft::pair<const int, int>(35, 1000));
+           a.insert(ft::pair<const int, int>(36, 1000));
+                a.insert(ft::pair<const int, int>(15, 1000));
+                     a.insert(ft::pair<const int, int>(20, 1000));
+                          a.insert(ft::pair<const int, int>(5, 1000));
+                               a.insert(ft::pair<const int, int>(10, 1000));
+                                    a.insert(ft::pair<const int, int>(15, 1000));
               //    std::map<int , int>::iterator v(b.begin());
                 //     std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
                      ft::map<int , int>::iterator u(a.begin());

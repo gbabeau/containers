@@ -30,6 +30,14 @@ namespace ft
         {
 
         }
+        node & operator=(node & a)
+        {
+        type = a.type;
+        color = a.color;
+        left = a.left;
+        rigth = a.rigth;
+        parents = a.parents;
+        }
         T* operator->() const {return &(operator*());}
         T& operator*() const {return type;}  
     };

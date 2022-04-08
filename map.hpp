@@ -11,6 +11,25 @@
 #include "node.hpp"
 #include "pair.hpp"
 
+#define RESET   "\033[0m"
+#define BLACKCOLOR   "\033[30m"      /* Black */
+#define REDCOL    "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+#define BOLDBLACK   "\033[1m\033[30m"      /* Bold Black */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
+#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
+#define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
+#define BOLDCYAN    "\033[1m\033[36m"       /* Bold Cyan */
+#define BOLDWHITE   "\033[1m\033[37m"
+
+
 namespace ft {
 
 
@@ -111,7 +130,71 @@ T& operator[](const key_type& x)
     return *a;
 }
 // modifiers:
+    bool st_tab(ft::node<value_type> *tmp, int n)
+    {
+        int i = 0;
+        while (i != n && tmp[i] == NULL)
+            i++;
+    return (i == n);
+    }
 
+    void print_tmp(ft::node<value_type> *tmp, int n)
+    {
+        int i = 0;
+        while (i != n)
+        {
+            if (tmp[i] == NULL)
+            {
+                std::cout << "     NULL      ";
+            }
+            else
+            {
+                if (tmp[i].color == ROUGE)
+                    std::cout << REDCOL << "first : "<< tmp[i].type->first << "     " << RESET;
+                else
+                    std::cout << "first : "<< tmp[i].type->first <<"     ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    ft::node<value_type> *init_tmp( ft::node<value_type> *tmp, int n)
+    {
+        int i = 0;
+           ft::node<value_type>  **tmp2 = new node<value_type>[n * 2][1];
+         while (i != n)
+        {
+
+ 
+            if (tmp[i] == NULL)
+            {
+                tmp2[i * 2] = NULL;
+                tmp2[i * 2 + 1] = NULL;
+            }
+            else
+            {
+                    tmp2[i*2] = tmp[i].rigth;
+                    tmp2[i*2 + 1] = tmp[i].left;
+            }
+            i++;
+        }
+            return tmp2;
+    }
+    void print_tab()
+    {
+        ft::node<value_type>    **tmp = new node<value_type>[1][1];
+        int                     n = 1;
+        ft::node<value_type>  *tmp2 = NULL;
+        while (st_tab(tmp, n))
+        {
+            print_tmp(tmp, n);
+            tmp2 = init_tmp( tmp, n);
+
+            delete[] tmp;
+            n *= 2;
+            tmp = tmp2;
+        }
+        
+    }
 
    void rotate(ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F)
    {
@@ -144,7 +227,7 @@ void equilibre(ft::node<value_type> *tmp)
 {
    std::cout << "equilibre " << tmp->parents->color << std::endl;
 
-    if (tmp->parents->color == NOIR || tmp->parents->parents == NULL)
+    if (tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
         return;
     int col = ROUGE;
 
@@ -159,11 +242,11 @@ void equilibre(ft::node<value_type> *tmp)
     }
     else
     {
-        std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
+        std::cout << "CAS 2" << std::endl;
         if (tmp->parents->parents->left == tmp->parents)
         {
-            
-            if (tmp->parents->left != tmp)
+             std::cout << "CAS 3" << std::endl;
+            if (tmp->parents->left != NULL && tmp->parents->left != tmp)
             {
                 rotate(tmp->parents, tmp,  tmp->left);
                 tmp->left->color = ROUGE;
@@ -173,19 +256,27 @@ void equilibre(ft::node<value_type> *tmp)
             }
             else
             {
+                 std::cout << "CAS 4" << std::endl;
             rotate(tmp->parents->parents, tmp->parents, tmp->parents->rigth);
-                std::cout << "AAAAAA" << std::endl;
+                std::cout << "CAS 5" << std::endl;
+                if (tmp->parents != NULL)
+                {
                 tmp->parents->color = NOIR;
-                tmp->parents->rigth->color = ROUGE;
+                if (tmp->parents->rigth != NULL)
+                    tmp->parents->rigth->color = ROUGE;
                 equilibre(tmp->parents);
+                }
             }
         }
         else
         {
-               if (tmp->parents->rigth != tmp)
+              std::cout << "CAS 5" << std::endl;
+               if (tmp->parents->rigth != NULL && tmp->parents->rigth != tmp)
                {
-                       rotate(tmp->parents, tmp, tmp->rigth);
-                    rotate(tmp->parents->parents, tmp->parents,  tmp->parents->left);
+                    std::cout << "CAS 6" << std::endl;
+                       rotate(tmp->parents, tmp, tmp->left);
+                        std::cout << "CAS 7" << std::endl;
+                    rotate(tmp->rigth, tmp,  tmp->parents->left);
                 tmp->left->color = ROUGE;
                 tmp->rigth->color = ROUGE;
                 tmp->color = NOIR;
@@ -196,11 +287,15 @@ void equilibre(ft::node<value_type> *tmp)
                    std::cout << "AAAAAA" << std::endl;
                 rotate(tmp->parents->parents, tmp->parents,  tmp->parents->left);
                 std::cout << "AAAAAA" << std::endl;
+                if (tmp->parents != NULL)
+                {
                 tmp->parents->color = NOIR;
-                std::cout << "AAAAAA" << std::endl;
-                tmp->parents->left->color = ROUGE;
+                std::cout << "LAAA" << std::endl;
+                if (tmp->parents->left != NULL)
+                    tmp->parents->left->color = ROUGE;
                 std::cout << "AAAAAA" << std::endl;
                 equilibre(tmp->parents);
+                }
                }
         }   
     }
