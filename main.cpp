@@ -6,13 +6,23 @@ int main()
   std::map<int , int> b;
   std::pair<const int, int> e(10, 100);
 
+
   a.insert(ft::pair<const int, int>(10, 100));
   a.insert(ft::pair<const int, int>(5, 1000));
   a.insert(ft::pair<const int, int>(20, 1000));
       a.insert(ft::pair<const int, int>(3, 1000));
+
       a.insert(ft::pair<const int, int>(7, 1000));
+
     a.insert(ft::pair<const int, int>(25, 1000));
+    std::cout << "deb" << std::endl;
+    a.print_tab();
+    std::cout << "FIN" << std::endl;
       a.insert(ft::pair<const int, int>(30, 1000));
+    std::cout << "deb" << std::endl;
+    a.print_tab();
+    std::cout << "FIN" << std::endl;
+    return 0;
       a.insert(ft::pair<const int, int>(35, 1000));
            a.insert(ft::pair<const int, int>(40, 1000));
                 a.insert(ft::pair<const int, int>(45, 1000));
@@ -30,7 +40,10 @@ int main()
               //    std::map<int , int>::iterator v(b.begin());
                 //     std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
                      ft::map<int , int>::iterator u(a.begin());
-          std::cout << "first = " <<  u->first << " seconde = " << u->seconde << std::endl; 
+          std::cout << "first = " <<  u->first << " seconde = " << u->seconde << std::endl;
+          std::cout << "deb" << std::endl;
+          a.print_tab();
+          std::cout << "FIN" << std::endl;
  // b.insert(e);
 /*
 

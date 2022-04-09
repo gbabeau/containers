@@ -10,6 +10,8 @@
 #include "lexicograpfical_copare.hpp"
 #include "node.hpp"
 #include "pair.hpp"
+#include <unistd.h>
+
 
 #define RESET   "\033[0m"
 #define BLACKCOLOR   "\033[30m"      /* Black */
@@ -130,37 +132,39 @@ T& operator[](const key_type& x)
     return *a;
 }
 // modifiers:
-    bool st_tab(ft::node<value_type> *tmp, int n)
+    bool st_tab(ft::node<value_type> **tmp, int n)
     {
         int i = 0;
         while (i != n && tmp[i] == NULL)
             i++;
-    return (i == n);
+    return !(i == n);
     }
 
-    void print_tmp(ft::node<value_type> *tmp, int n)
+    void print_tmp(ft::node<value_type> **tmp, int n)
     {
         int i = 0;
         while (i != n)
         {
             if (tmp[i] == NULL)
             {
-                std::cout << "     NULL      ";
+                std::cout << "|END|";
             }
             else
             {
-                if (tmp[i].color == ROUGE)
-                    std::cout << REDCOL << "first : "<< tmp[i].type->first << "     " << RESET;
+                if (tmp[i]->color == ROUGE)
+                    std::cout << REDCOL << "|"<< tmp[i]->type.first << "|" << RESET;
                 else
-                    std::cout << "first : "<< tmp[i].type->first <<"     ";
+                    std::cout << "|"<< tmp[i]->type.first <<"|";
             }
+            i++;
         }
         std::cout << std::endl;
     }
-    ft::node<value_type> *init_tmp( ft::node<value_type> *tmp, int n)
+
+    ft::node<value_type> **init_tmp( ft::node<value_type> **tmp, int n)
     {
         int i = 0;
-           ft::node<value_type>  **tmp2 = new node<value_type>[n * 2][1];
+           ft::node<value_type>  **tmp2 = new node<value_type>*[n * 2];
          while (i != n)
         {
 
@@ -172,24 +176,27 @@ T& operator[](const key_type& x)
             }
             else
             {
-                    tmp2[i*2] = tmp[i].rigth;
-                    tmp2[i*2 + 1] = tmp[i].left;
+                    tmp2[i*2] = tmp[i]->left;
+                    tmp2[i*2 + 1] = tmp[i]->rigth;
             }
             i++;
         }
             return tmp2;
     }
+
     void print_tab()
     {
-        ft::node<value_type>    **tmp = new node<value_type>[1][1];
+        ft::node<value_type>    **tmp = new ft::node<value_type>*[1];
+        //malloc( sizeof(ft::node<value_type>*) * 1);
         int                     n = 1;
-        ft::node<value_type>  *tmp2 = NULL;
+        ft::node<value_type>  **tmp2 = NULL;
+        tmp = &_node;
         while (st_tab(tmp, n))
         {
             print_tmp(tmp, n);
             tmp2 = init_tmp( tmp, n);
-
-            delete[] tmp;
+            sleep(1);
+           // delete[] tmp;
             n *= 2;
             tmp = tmp2;
         }
