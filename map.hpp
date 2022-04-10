@@ -195,7 +195,7 @@ T& operator[](const key_type& x)
         {
             print_tmp(tmp, n);
             tmp2 = init_tmp( tmp, n);
-            sleep(1);
+            usleep(250000);
            // delete[] tmp;
             n *= 2;
             tmp = tmp2;
@@ -203,21 +203,37 @@ T& operator[](const key_type& x)
         
     }
 
-   void rotate(ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F)
+   void rotate(ft::node<value_type> *GPP, ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F)
    {
           //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
-       P->parents = GP->parents;
-       GP->parents = P;
-       if (GP->left == P)
-            GP->left = F;
-        else
-            GP->rigth = F;
-        if (F != NULL)
-            F->parents = GP;
+
+                if (GPP != NULL)
+                {
+                    if (GPP->left == GP)
+                    GPP->left = P;
+                    else
+                    GPP->rigth = P;
+                }
+              std::cout << "deb" << std::endl;
+    this->print_tab();
+    std::cout << "FIN" << std::endl;
         if (P->left == F)
             P->left = GP;
         else
             P->rigth = GP;
+
+             if (GP->left == P)
+            GP->left = F;
+        else
+            GP->rigth = F;
+                            std::cout << "deb" << std::endl;
+    this->print_tab();
+    std::cout << "FIN" << std::endl;
+       P->parents = GP->parents;
+       GP->parents = P;
+        if (F != NULL)
+            F->parents = GP;
+
                  //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
        
                           //   std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
@@ -234,6 +250,9 @@ void equilibre(ft::node<value_type> *tmp)
 {
    std::cout << "equilibre " << tmp->parents->color << std::endl;
 
+    std::cout << "deb" << std::endl;
+    this->print_tab();
+    std::cout << "FIN" << std::endl;
     if (tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
         return;
     int col = ROUGE;
@@ -246,6 +265,7 @@ void equilibre(ft::node<value_type> *tmp)
         tmp->parents->parents->left->color = NOIR;
         tmp->parents->parents->rigth->color = NOIR;
         tmp->parents->parents->color = ROUGE;
+         equilibre(tmp);
     }
     else
     {
@@ -255,7 +275,7 @@ void equilibre(ft::node<value_type> *tmp)
              std::cout << "CAS 3" << std::endl;
             if (tmp->parents->left != NULL && tmp->parents->left != tmp)
             {
-                rotate(tmp->parents, tmp,  tmp->left);
+                rotate(tmp->parents->parents->parents ,tmp->parents, tmp,  tmp->left);
                 tmp->left->color = ROUGE;
                 tmp->rigth->color = ROUGE;
                 tmp->color = NOIR;
@@ -263,9 +283,9 @@ void equilibre(ft::node<value_type> *tmp)
             }
             else
             {
-                 std::cout << "CAS 4" << std::endl;
-            rotate(tmp->parents->parents, tmp->parents, tmp->parents->rigth);
-                std::cout << "CAS 5" << std::endl;
+                 std::cout << "CAS 5" << std::endl;
+            rotate(tmp->parents->parents->parents ,tmp->parents->parents, tmp->parents, tmp->parents->rigth);
+                std::cout << "CAS 6" << std::endl;
                 if (tmp->parents != NULL)
                 {
                 tmp->parents->color = NOIR;
@@ -277,13 +297,13 @@ void equilibre(ft::node<value_type> *tmp)
         }
         else
         {
-              std::cout << "CAS 5" << std::endl;
+              std::cout << "CAS 7" << std::endl;
                if (tmp->parents->rigth != NULL && tmp->parents->rigth != tmp)
                {
-                    std::cout << "CAS 6" << std::endl;
-                       rotate(tmp->parents, tmp, tmp->left);
-                        std::cout << "CAS 7" << std::endl;
-                    rotate(tmp->rigth, tmp,  tmp->parents->left);
+                    std::cout << "CAS 8" << std::endl;
+                       rotate(tmp->parents->parents->parents ,tmp->parents, tmp, tmp->left);
+                        std::cout << "CAS 9" << std::endl;
+                    rotate(tmp->parents->parents->parents ,tmp->rigth, tmp,  tmp->parents->left);
                 tmp->left->color = ROUGE;
                 tmp->rigth->color = ROUGE;
                 tmp->color = NOIR;
@@ -291,8 +311,38 @@ void equilibre(ft::node<value_type> *tmp)
                }
                else
                {
-                   std::cout << "AAAAAA" << std::endl;
-                rotate(tmp->parents->parents, tmp->parents,  tmp->parents->left);
+
+                 //  std::cout << "AAAAAA" << std::endl;
+                   //    std::cout << "deb" << std::endl;
+                this->print_tab();
+                    std::cout << "rOTAATE" << std::endl;
+               // ft::node<value_type> *GPP = tmp->parents->parents->parents; 
+               // ft::node<value_type> *GP = tmp->parents->parents;
+               // if (GP == NULL)
+               // std::cout << "GP == NULL";
+               // ft::node<value_type> *P = tmp->parents;
+               // if (P == NULL)
+               // std::cout << "P == NULL";
+               // ft::node<value_type> *F = tmp->parents->left;
+
+
+               // if (F == NULL)
+               // std::cout << "F == NULL";
+                //P->parents = GP->parents;
+                //std::cout << "rOTAATE" << std::endl;
+                //P->left = GP;
+                //GP->rigth = F;
+                //std::cout << "rOTAATE" << std::endl;
+                //GP->parents = P;
+                //std::cout << "rOTAATE" << std::endl;
+                //if (F != NULL)
+                  //  F->parents = GP;
+                //std::cout << "rOTAATE" << std::endl;
+                
+                rotate(tmp->parents->parents->parents, tmp->parents->parents, tmp->parents,  tmp->parents->left);
+                    std::cout << "deb" << std::endl;
+                     this->print_tab();
+                     std::cout << "FIN" << std::endl;
                 std::cout << "AAAAAA" << std::endl;
                 if (tmp->parents != NULL)
                 {
