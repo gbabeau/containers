@@ -1,12 +1,28 @@
 #include "map.hpp"
 #include <map>
-int main()
+#include <cstdlib>
+
+int main(int argv, char ** argc)
 {
   ft::map<int , int> a;
   std::map<int , int> b;
   std::pair<const int, int> e(10, 100);
 
+  if (argv != 2)
+  return 0;
+    int u = atoi(argc[1]);
+    int i;
+  srand(time(NULL));
+    while (u-- != 0)
+    {
+      i =  rand()% 100;
+              std::cout << "rajout " << i << std::endl;
+       a.insert(ft::pair<const int, int>(i, 100));
+        a.print_tab();
+        std::cout << "FIN" << std::endl;
 
+    }
+  return 0;
   a.insert(ft::pair<const int, int>(10, 100));
   a.insert(ft::pair<const int, int>(5, 1000));
   a.insert(ft::pair<const int, int>(20, 1000));
@@ -15,19 +31,23 @@ int main()
       a.insert(ft::pair<const int, int>(7, 1000));
 
     a.insert(ft::pair<const int, int>(25, 1000));
-    std::cout << "deb" << std::endl;
-    a.print_tab();
-    std::cout << "FIN" << std::endl;
+
       a.insert(ft::pair<const int, int>(30, 1000));
-    std::cout << "deb" << std::endl;
-    a.print_tab();
-    std::cout << "FIN" << std::endl;
+
 
       a.insert(ft::pair<const int, int>(35, 1000));
+                      
            a.insert(ft::pair<const int, int>(40, 1000));
-           return 0;
+          
                 a.insert(ft::pair<const int, int>(45, 1000));
+                std::cout << "rajout 45" << std::endl;
+                     a.print_tab();
+                     std::cout << "FIN" << std::endl;
                      a.insert(ft::pair<const int, int>(50, 1000));
+                      std::cout << "rajout 50" << std::endl;
+                     a.print_tab();
+                     std::cout << "FIN" << std::endl;
+                     return 0;
                           a.insert(ft::pair<const int, int>(55, 1000));
                                a.insert(ft::pair<const int, int>(60, 1000));
                                     a.insert(ft::pair<const int, int>(65, 1000));
@@ -74,11 +94,10 @@ int main()
                           a.insert(ft::pair<const int, int>(154, 1000));
                                a.insert(ft::pair<const int, int>(-4544, 1000));
                                     a.insert(ft::pair<const int, int>(154854, 1000));
-                                    return 0;
+
+                          
               //    std::map<int , int>::iterator v(b.begin());
                 //     std::cout << "first = " <<  v->first << " seconde = " << std::endl; 
-                     ft::map<int , int>::iterator u(a.begin());
-          std::cout << "first = " <<  u->first << " seconde = " << u->seconde << std::endl;
           std::cout << "deb" << std::endl;
           a.print_tab();
           std::cout << "FIN" << std::endl;

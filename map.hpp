@@ -156,6 +156,8 @@ T& operator[](const key_type& x)
                 else
                     std::cout << "|"<< tmp[i]->type.first <<"|";
             }
+            if ( 1 == i%2)
+            std::cout << " ";
             i++;
         }
         std::cout << std::endl;
@@ -217,31 +219,33 @@ T& operator[](const key_type& x)
                     {
                     GPP->rigth = P;
                     }
-                    P->parents = GPP;
                 }
-    std::cout << "deb3" << std::endl;
-    this->print_tab();
-    std::cout << "FIN3" << std::endl;
+                else
+                _node = P;
+                 P->parents = GPP;
+ //   std::cout << "deb3" << std::endl;
+ //   this->print_tab();
+ //   std::cout << "FIN3" << std::endl;
         if (GP->left == P)
             GP->left = F;
         else
             GP->rigth = F;
 
-    std::cout << "deb4" << std::endl;
-    this->print_tab();
-    std::cout << "FIN4" << std::endl;
+//    std::cout << "deb4" << std::endl;
+  //  this->print_tab();
+  //  std::cout << "FIN4" << std::endl;
         if (P->left == F)
             P->left = GP;
         else
             P->rigth = GP;
-    std::cout << "deb" << std::endl;
-    this->print_tab();
-    std::cout << "FIN" << std::endl;
+  //  std::cout << "deb" << std::endl;
+  //  this->print_tab();
+  //  std::cout << "FIN" << std::endl;
        P->parents = GP->parents;
        GP->parents = P;
         if (F != NULL)
             F->parents = GP;
-        P->color = NOIR;
+        GP->parents->color = NOIR;
         if (P->left != NULL)
             P->left->color = ROUGE;
         if (P->rigth != NULL)
@@ -250,24 +254,32 @@ T& operator[](const key_type& x)
    }
 void equilibre(ft::node<value_type> *tmp)
 {
-   std::cout << "equilibre " << tmp->parents->color << std::endl;
+  // std::cout << "equilibre " << tmp->parents->color << std::endl;
 
-    std::cout << "deb" << std::endl;
-    this->print_tab();
-    std::cout << "FIN" << std::endl;
-    if (tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
+  //  std::cout << "deb" << std::endl;
+////    this->print_tab();
+ //   std::cout << "FIN" << std::endl;
+    if (tmp == NULL || tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
+    {
+        _node->color = NOIR;
         return;
+    }
     int col = ROUGE;
-
+    if (tmp->color == NOIR)
+    {
+       equilibre(tmp->parents);
+       _node->color = NOIR;
+       return; 
+    }
     if (tmp->parents->parents->left == NULL || tmp->parents->parents->rigth == NULL || tmp->parents->parents->left->color == NOIR || tmp->parents->parents->rigth->color == NOIR)
         col = NOIR;
     if (col == ROUGE)
     {
-       // std::cout << "cas 1 equilibre" << std::endl;
+       std::cout << "cas 1 equilibre" << std::endl;
         tmp->parents->parents->left->color = NOIR;
         tmp->parents->parents->rigth->color = NOIR;
         tmp->parents->parents->color = ROUGE;
-         equilibre(tmp);
+         equilibre(tmp->parents);
     }
     else
     {
@@ -281,7 +293,7 @@ void equilibre(ft::node<value_type> *tmp)
                 tmp->left->color = ROUGE;
                 tmp->rigth->color = ROUGE;
                 tmp->color = NOIR;
-                equilibre(tmp);
+                equilibre(tmp->parents);
             }
             else
             {
@@ -309,18 +321,18 @@ void equilibre(ft::node<value_type> *tmp)
                 tmp->left->color = ROUGE;
                 tmp->rigth->color = ROUGE;
                 tmp->color = NOIR;
-                equilibre(tmp->parents->parents);
+                equilibre(tmp->parents);
                }
                else
                {
              //   this->print_tab();
-                                     std::cout << "deb0" << std::endl;
-                     this->print_tab();
-                     std::cout << "FIN0" << std::endl;
+                   //                  std::cout << "deb0" << std::endl;
+                    // this->print_tab();
+                  //   std::cout << "VALUE" << tmp->type.first << std::endl;
                 rotate(tmp->parents->parents->parents, tmp->parents->parents, tmp->parents,  tmp->parents->left);
-                        std::cout << "deb1" << std::endl;
-                     this->print_tab();
-                     std::cout << "FIN1" << std::endl;
+            //            std::cout << "deb1" << std::endl;
+              //       this->print_tab();
+                //     std::cout << "FIN1" << std::endl;
         //        std::cout << "AAAAAA" << std::endl;
                 if (tmp->parents != NULL)
                 {
@@ -329,14 +341,15 @@ void equilibre(ft::node<value_type> *tmp)
                 if (tmp->parents->left != NULL)
                     tmp->parents->left->color = ROUGE;
          //       std::cout << "AAAAAA" << std::endl;
-                equilibre(tmp->parents->parents);
+                equilibre(tmp->parents);
                 }
                }
         }   
     }
-                        std::cout << "deb" << std::endl;
-                     this->print_tab();
-                     std::cout << "FIN" << std::endl;
+    _node->color = NOIR;
+                 //       std::cout << "deb" << std::endl;
+              //       this->print_tab();
+               //      std::cout << "FIN" << std::endl;
 }
 
 ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
