@@ -62,4 +62,4 @@ template <class InputIterator1, class InputIterator2, class Compare>
                     return (first2!=last2);    
                 }
 
-};
+}

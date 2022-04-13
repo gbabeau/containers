@@ -42,4 +42,4 @@ namespace ft
         T& operator*() const {return type;}  
     };
 }
-# endif 
+# endif

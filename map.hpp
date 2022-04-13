@@ -68,7 +68,7 @@ friend class map;
 protected:
 Compare comp;
 
-value_compare(Compare c) : comp(c) {}
+value_compare(Compare c) : comp(c)  {}
 public:
 bool operator()(const value_type& x, const value_type& y) const {
 return comp(x.first, y.first);
@@ -84,8 +84,10 @@ const Allocator& = Allocator())
 template <class InputIterator>
 map(InputIterator first, InputIterator last,
 const Compare& comp = Compare(), const Allocator& = Allocator());
-map(const map<Key,T,Compare,Allocator>& x)
+map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL)
 {
+    std::allocator<ft::node<value_type> > _a;
+    _ptrfin = _a.allocate(1); 
     (void)x;
 }
 ~map()
@@ -145,7 +147,7 @@ T& operator[](const key_type& x)
         int i = 0;
         while (i != n)
         {
-            if (tmp[i] == NULL)
+            if (tmp[i] == NULL || tmp[i] == _ptrfin)
             {
                 std::cout << "|END|";
             }
@@ -171,7 +173,7 @@ T& operator[](const key_type& x)
         {
 
  
-            if (tmp[i] == NULL)
+            if (tmp[i] == NULL ||tmp[i] == _ptrfin)
             {
                 tmp2[i * 2] = NULL;
                 tmp2[i * 2 + 1] = NULL;
@@ -205,151 +207,108 @@ T& operator[](const key_type& x)
         
     }
 
-   void rotate(ft::node<value_type> *GPP, ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F)
-   {
-          //     std::cout << "AAAAAAAAAAAAAAAAS" << std::endl;
-
-                if (GPP != NULL)
-                {
-                    if (GPP->left == GP)
-                    {
-                    GPP->left = P;
-                    }
-                    else
-                    {
-                    GPP->rigth = P;
-                    }
-                }
-                else
-                _node = P;
-                 P->parents = GPP;
- //   std::cout << "deb3" << std::endl;
- //   this->print_tab();
- //   std::cout << "FIN3" << std::endl;
-        if (GP->left == P)
-            GP->left = F;
-        else
-            GP->rigth = F;
-
-//    std::cout << "deb4" << std::endl;
-  //  this->print_tab();
-  //  std::cout << "FIN4" << std::endl;
-        if (P->left == F)
-            P->left = GP;
-        else
-            P->rigth = GP;
-  //  std::cout << "deb" << std::endl;
-  //  this->print_tab();
-  //  std::cout << "FIN" << std::endl;
-       P->parents = GP->parents;
-       GP->parents = P;
-        if (F != NULL)
-            F->parents = GP;
+    void color(ft::node<value_type> *GP, ft::node<value_type> *P)
+    {
         GP->parents->color = NOIR;
         if (P->left != NULL)
             P->left->color = ROUGE;
         if (P->rigth != NULL)
             P->rigth->color = ROUGE;
 
+    }
+     void color2(ft::node<value_type> *GP)
+     {
+          GP->color = ROUGE;
+        if (GP->left != NULL)
+            GP->left->color = NOIR;
+        if (GP->rigth != NULL)
+            GP->rigth->color = NOIR;
+
+     }
+
+   void rotate(ft::node<value_type> *GPP, ft::node<value_type> *GP, ft::node<value_type> *P, ft::node<value_type> *F, int i)
+   {
+                if (GPP != NULL)
+                {
+                    if (GPP->left == GP)
+                        GPP->left = P;
+                    else
+                        GPP->rigth = P;
+                }
+                else
+                    _node = P;
+        P->parents = GPP;
+        if (GP->left == P)
+            GP->left = F;
+        else
+            GP->rigth = F;
+        if (P->left == F && i != 0)
+            P->left = GP;
+        else
+            P->rigth = GP;
+       P->parents = GP->parents;
+       GP->parents = P;
+        if (F != NULL)
+            F->parents = GP;
+       if (i == 1)
+            color(GP, P);
    }
 void equilibre(ft::node<value_type> *tmp)
 {
-  // std::cout << "equilibre " << tmp->parents->color << std::endl;
 
-  //  std::cout << "deb" << std::endl;
-////    this->print_tab();
- //   std::cout << "FIN" << std::endl;
     if (tmp == NULL || tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
     {
         _node->color = NOIR;
         return;
     }
-    int col = ROUGE;
-    if (tmp->color == NOIR)
+    if (tmp->parents->color == NOIR)
     {
        equilibre(tmp->parents);
        _node->color = NOIR;
        return; 
     }
-    if (tmp->parents->parents->left == NULL || tmp->parents->parents->rigth == NULL || tmp->parents->parents->left->color == NOIR || tmp->parents->parents->rigth->color == NOIR)
+    int col = ROUGE;
+    if (tmp->parents->parents->left == NULL || (tmp->parents->parents->rigth == NULL || tmp->parents->parents->rigth == _ptrfin)|| tmp->parents->parents->left->color == NOIR || tmp->parents->parents->rigth->color == NOIR)
         col = NOIR;
     if (col == ROUGE)
     {
-       std::cout << "cas 1 equilibre" << std::endl;
-        tmp->parents->parents->left->color = NOIR;
-        tmp->parents->parents->rigth->color = NOIR;
-        tmp->parents->parents->color = ROUGE;
-         equilibre(tmp->parents);
+        color2(tmp->parents->parents);
+         equilibre(tmp);
+         _node->color = NOIR;
+         return;
     }
     else
     {
-     //   std::cout << "CAS 2" << std::endl;
         if (tmp->parents->parents->left == tmp->parents)
         {
-       //      std::cout << "CAS 3" << std::endl;
-            if (tmp->parents->left != NULL && tmp->parents->left != tmp)
+            if (tmp->parents->rigth != NULL && tmp->parents->rigth == tmp)
             {
-                rotate(tmp->parents->parents->parents ,tmp->parents, tmp,  tmp->left);
-                tmp->left->color = ROUGE;
-                tmp->rigth->color = ROUGE;
-                tmp->color = NOIR;
+                rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->left,-1);
+                rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->rigth,1);
                 equilibre(tmp->parents);
             }
             else
             {
-             //    std::cout << "CAS 5" << std::endl;
-            rotate(tmp->parents->parents->parents ,tmp->parents->parents, tmp->parents, tmp->parents->rigth);
-              //  std::cout << "CAS 6" << std::endl;
-                if (tmp->parents != NULL)
-                {
-                tmp->parents->color = NOIR;
-                if (tmp->parents->rigth != NULL)
-                    tmp->parents->rigth->color = ROUGE;
-                equilibre(tmp->parents);
-                }
+                rotate(tmp->parents->parents->parents ,tmp->parents->parents, tmp->parents, tmp->parents->rigth,1);
+                equilibre(tmp);
             }
         }
         else
         {
-              //std::cout << "CAS 7" << std::endl;
-               if (tmp->parents->rigth != NULL && tmp->parents->rigth != tmp)
+               if (tmp->parents->left != NULL && tmp->parents->left == tmp)
                {
-                //    std::cout << "CAS 8" << std::endl;
-                       rotate(tmp->parents->parents->parents ,tmp->parents, tmp, tmp->left);
-                        std::cout << "CAS 9" << std::endl;
-                    rotate(tmp->parents->parents->parents ,tmp->rigth, tmp,  tmp->parents->left);
-                tmp->left->color = ROUGE;
-                tmp->rigth->color = ROUGE;
-                tmp->color = NOIR;
-                equilibre(tmp->parents);
+                rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->rigth, 0);
+                rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->left,1);
+                equilibre(tmp);
                }
                else
                {
-             //   this->print_tab();
-                   //                  std::cout << "deb0" << std::endl;
-                    // this->print_tab();
-                  //   std::cout << "VALUE" << tmp->type.first << std::endl;
-                rotate(tmp->parents->parents->parents, tmp->parents->parents, tmp->parents,  tmp->parents->left);
-            //            std::cout << "deb1" << std::endl;
-              //       this->print_tab();
-                //     std::cout << "FIN1" << std::endl;
-        //        std::cout << "AAAAAA" << std::endl;
-                if (tmp->parents != NULL)
-                {
-                tmp->parents->color = NOIR;
-         //       std::cout << "LAAA" << std::endl;
-                if (tmp->parents->left != NULL)
-                    tmp->parents->left->color = ROUGE;
-         //       std::cout << "AAAAAA" << std::endl;
-                equilibre(tmp->parents);
-                }
+                rotate(tmp->parents->parents->parents, tmp->parents->parents, tmp->parents,  tmp->parents->left, 1);
+                equilibre(tmp);
                }
         }   
     }
     _node->color = NOIR;
-                 //       std::cout << "deb" << std::endl;
-              //       this->print_tab();
-               //      std::cout << "FIN" << std::endl;
 }
 
 ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
@@ -357,7 +316,7 @@ ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *no
     std::allocator<ft::node<value_type> > _a;
     if (node == NULL)
     {
-        std::cout << "insert" << std::endl;
+     //   std::cout << "insert" << std::endl;
          node = _a.allocate(1);
         _a.construct(node ,ft::node<value_type>(x));
         node->parents = node2;
@@ -370,8 +329,10 @@ ft::pair<iterator, bool> insert(const value_type& x)
         std::allocator<ft::node<value_type> > _a;
     if (_node == NULL)
     {
-         std::cout << "racine mise" << std::endl;
+     //    std::cout << "racine mise" << std::endl;
         _node = alloc_insert(x, _node, NULL);
+        _ptrdeb = _node;
+        _node->rigth = _ptrfin;  
         _node->color = NOIR;
             return ft::pair<iterator, bool>();
     }
@@ -380,14 +341,13 @@ ft::pair<iterator, bool> insert(const value_type& x)
         node<value_type> *tmp = _node;
         while (tmp != NULL)
         {
-            std::cout << "AAAAAAAAAAAa" << std::endl;
+       //     std::cout << "AAAAAAAAAAAa" << std::endl;
             if (tmp->type.first > x.first)
             {
                     if (tmp->left == NULL)
                     {
-                    std::cout << "insert" << std::endl;
-                        tmp->left = _a.allocate(1);
-                        _a.construct(tmp->left ,ft::node<value_type>(x));
+                    tmp->left = _a.allocate(1);
+                    _a.construct(tmp->left ,ft::node<value_type>(x));
                     tmp->left->parents = tmp;
                     tmp = tmp->left;
                     break;
@@ -400,10 +360,17 @@ ft::pair<iterator, bool> insert(const value_type& x)
             }
             else
             {
-                    if (tmp->rigth == NULL)
+                    if (tmp->rigth == NULL || tmp->rigth == _ptrfin)
                     {
-                        std::cout << "insert" << std::endl;
-                        tmp->rigth = _a.allocate(1);
+                        if (tmp->rigth == _ptrfin)
+                        {
+                            tmp->rigth = _a.allocate(1);
+                            tmp->rigth->rigth = _ptrfin;
+                        }
+                        else
+                        {
+                            tmp->rigth = _a.allocate(1);
+                        }
                         _a.construct(tmp->rigth ,ft::node<value_type>(x));
                         tmp->rigth->parents = tmp;
                         tmp = tmp->rigth;
@@ -412,9 +379,8 @@ ft::pair<iterator, bool> insert(const value_type& x)
                     tmp = tmp->rigth;
             }
         } 
-        std::cout << "LAAAAA" <<std::endl;
          if (tmp != NULL)
-        equilibre(tmp);
+            equilibre(tmp);
     }
     return ft::pair<iterator, bool>();
 }
@@ -446,7 +412,8 @@ equal_range(const key_type& x) const;
     private:
         node<value_type>    *_node;
         allocator_type      _alloc;
-
+        node<value_type>    *_ptrdeb;
+        node<value_type>    *_ptrfin;
 };
 
 template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
@@ -459,4 +426,4 @@ template <class Key, class T, class Compare, class Allocator>bool operator<=(con
 template <class Key, class T, class Compare, class Allocator>void swap(map<Key,T,Compare,Allocator>& x,map<Key,T,Compare,Allocator>& y);
 
 }
-# endif 
+# endif

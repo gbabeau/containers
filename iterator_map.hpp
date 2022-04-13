@@ -119,5 +119,5 @@ typename iterator_traits<Iterator>::reference>
     bool operator>=(const reverse_iterator<TL>& lhs, const reverse_iterator<TR>& rhs)  {return lhs.base() <= rhs.base();}
     template< class TL, class TR >
     bool operator<=(const reverse_iterator<TL>& lhs, const reverse_iterator<TR>& rhs)  {return lhs.base() >= rhs.base();}
-};
+}
 #endif
