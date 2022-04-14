@@ -40,7 +40,28 @@ template< class T>
    // reference operator[](difference_type n){return p[n];}
    // Iterator& operator+=(difference_type n){ p += n; return *this;}
    // Iterator& operator-=(difference_type n){ p -= n; return *this;}
-    Iterator& operator++() { ; return *this;}
+    Iterator& operator++() 
+    { 
+        if (p->partents == NULL || p->parents->ritgh != p)
+
+        while (p->parents && p->parents->rigth == p)
+            p == p->parents
+            return p;
+        if (p->parents && p->parents->rig)
+            if (p->i)
+        if (p->parents && p->parents->left)
+        if (!p->parents || p->parents->left == p)
+        {
+
+        }     
+
+
+        if (p->left && !p->right)
+            p = p->rigth;
+        if (!p->parents && p->parent->left == p)
+            p = p->parents 
+        return *this;
+    }
     Iterator operator++(int) {Iterator tmp(*this); operator++(); return tmp;}
     Iterator& operator--() {--p; return *this;}
     Iterator operator--(int) {Iterator tmp(*this); operator--(); return tmp;}
