@@ -2,7 +2,7 @@ NAME = ft_container
 NAME2 = std_container
 
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror --std=c++98 -pedantic #-g -fsanitize=address #-D NAME="ft" #--std=c++98 -pedantic
+CXXFLAGS = -Wall -Wextra -Werror --std=c++98 -pedantic #-fsanitize=address #-D NAME="ft" #--std=c++98 -pedantic
 STDFLAG = -D M_NAMESPACE=1
 MFLAG = -D M_NAMESPACE=0
 SRCS = main.cpp

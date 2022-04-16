@@ -87,7 +87,8 @@ const Compare& comp = Compare(), const Allocator& = Allocator());
 map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL)
 {
     std::allocator<ft::node<value_type> > _a;
-    _ptrfin = _a.allocate(1); 
+    _ptrfin = _a.allocate(1);
+    // _a.construct(_ptrfin ,ft::node<value_type>());
     (void)x;
 }
 ~map()
@@ -98,14 +99,17 @@ operator=(const map<Key,T,Compare,Allocator>& x);
 // iterators:
 iterator begin()
 {
-    node<value_type> *tmp = _node;
+  /*  node<value_type> *tmp = _node;
 
     while (tmp->left != NULL)
-        tmp = tmp->left;
-    return (iterator(tmp));
+        tmp = tmp->left;*/
+    return (iterator(_ptrdeb));
 }
 const_iterator begin() const;
-iterator end();
+iterator end()
+{
+    return (iterator(_ptrfin));
+}
 const_iterator end() const;
 reverse_iterator rbegin();
 const_reverse_iterator rbegin() const;
@@ -137,7 +141,7 @@ T& operator[](const key_type& x)
     bool st_tab(ft::node<value_type> **tmp, int n)
     {
         int i = 0;
-        while (i != n && tmp[i] == NULL)
+        while (i != n && (tmp[i] == NULL || tmp[i] == _ptrfin))
             i++;
     return !(i == n);
     }
@@ -149,12 +153,12 @@ T& operator[](const key_type& x)
         {
             if (tmp[i] == NULL || tmp[i] == _ptrfin)
             {
-                std::cout << "|END|";
+                std::cout << "|ED|";
             }
             else
             {
                 if (tmp[i]->color == ROUGE)
-                    std::cout << REDCOL << "|"<< tmp[i]->type.first << "|" << RESET;
+                    std::cout << REDCOL << "|"<< tmp[i]->type.first << '|' << RESET;
                 else
                     std::cout << "|"<< tmp[i]->type.first <<"|";
             }
@@ -194,17 +198,21 @@ T& operator[](const key_type& x)
         //malloc( sizeof(ft::node<value_type>*) * 1);
         int                     n = 1;
         ft::node<value_type>  **tmp2 = NULL;
+        int i = 0;
+
         tmp = &_node;
         while (st_tab(tmp, n))
         {
             print_tmp(tmp, n);
             tmp2 = init_tmp( tmp, n);
-            usleep(25000);
-           // delete[] tmp;
+           // usleep(2500);
+         //   delete [] *tmp;
             n *= 2;
             tmp = tmp2;
+            i++;
+     //   std::cout << "NOMBRE DE LIGNE " << i << std::endl;
         }
-        
+        std::cout << std::endl <<"NOMBRE DE LIGNE " << i << std::endl;
     }
 
     void color(ft::node<value_type> *GP, ft::node<value_type> *P)
@@ -255,60 +263,65 @@ T& operator[](const key_type& x)
    }
 void equilibre(ft::node<value_type> *tmp)
 {
-
-    if (tmp == NULL || tmp->parents == NULL || tmp->parents->color == NOIR || tmp->parents->parents == NULL)
+    if (tmp == NULL || tmp->parents == NULL || tmp->parents->parents == NULL)
     {
-        _node->color = NOIR;
+         _node->color = NOIR;
         return;
     }
-    if (tmp->parents->color == NOIR)
+    if (tmp->color == NOIR)
     {
-       equilibre(tmp->parents);
-       _node->color = NOIR;
-       return; 
+        equilibre(tmp->parents);
+       return ;
     }
-    int col = ROUGE;
-    if (tmp->parents->parents->left == NULL || (tmp->parents->parents->rigth == NULL || tmp->parents->parents->rigth == _ptrfin)|| tmp->parents->parents->left->color == NOIR || tmp->parents->parents->rigth->color == NOIR)
-        col = NOIR;
+    int col = NOIR;
+    if ((tmp->parents->parents->left != NULL && tmp->parents->parents->left->color == ROUGE ) &&  (tmp->parents->parents->rigth != NULL && tmp->parents->parents->rigth != _ptrfin && tmp->parents->parents->rigth->color == ROUGE))
+        col = ROUGE;
     if (col == ROUGE)
-    {
+    {   
+     //   std::cout << "cas 0" << std::endl;
         color2(tmp->parents->parents);
-         equilibre(tmp);
+         equilibre(tmp->parents->parents);
          _node->color = NOIR;
          return;
     }
-    else
+    else if (tmp->parents->color == ROUGE)
     {
         if (tmp->parents->parents->left == tmp->parents)
         {
-            if (tmp->parents->rigth != NULL && tmp->parents->rigth == tmp)
+            if (tmp->parents->rigth == tmp)
             {
+          //      std::cout << "cas 1" << std::endl;
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->left,-1);
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->rigth,1);
                 equilibre(tmp->parents);
             }
             else
             {
-                rotate(tmp->parents->parents->parents ,tmp->parents->parents, tmp->parents, tmp->parents->rigth,1);
-                equilibre(tmp);
+               //   std::cout << "cas 2" << std::endl;
+                rotate(tmp->parents->parents->parents ,tmp->parents->parents, tmp->parents, tmp->parents->rigth, 1);
+                equilibre(tmp->parents->parents);
             }
         }
         else
         {
-               if (tmp->parents->left != NULL && tmp->parents->left == tmp)
+               if (tmp->parents->left == tmp)
                {
+              //     std::cout << "cas 3" << std::endl;
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->rigth, 0);
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->left,1);
-                equilibre(tmp);
+                return;
+                //equilibre(tmp->parents);
                }
                else
                {
+               //    std::cout << "cas 4 " << tmp->type.first << std::endl;
+
                 rotate(tmp->parents->parents->parents, tmp->parents->parents, tmp->parents,  tmp->parents->left, 1);
-                equilibre(tmp);
+                return;
+                //equilibre(tmp->parents->parents);
                }
         }   
     }
-    _node->color = NOIR;
 }
 
 ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
@@ -341,15 +354,16 @@ ft::pair<iterator, bool> insert(const value_type& x)
         node<value_type> *tmp = _node;
         while (tmp != NULL)
         {
-       //     std::cout << "AAAAAAAAAAAa" << std::endl;
-            if (tmp->type.first > x.first)
-            {
+            if (tmp->type.first >= x.first)
+            {;
                     if (tmp->left == NULL)
                     {
                     tmp->left = _a.allocate(1);
                     _a.construct(tmp->left ,ft::node<value_type>(x));
                     tmp->left->parents = tmp;
                     tmp = tmp->left;
+                    if (tmp->parents == _ptrdeb)
+                        _ptrdeb = tmp;
                     break;
                     }
                     tmp = tmp->left;
@@ -360,27 +374,46 @@ ft::pair<iterator, bool> insert(const value_type& x)
             }
             else
             {
+ 
                     if (tmp->rigth == NULL || tmp->rigth == _ptrfin)
                     {
+   
                         if (tmp->rigth == _ptrfin)
                         {
+          
                             tmp->rigth = _a.allocate(1);
+                             _a.construct(tmp->rigth ,ft::node<value_type>(x));
+
                             tmp->rigth->rigth = _ptrfin;
+          
+                         //   _ptrfin->parents = tmp->rigth;
                         }
                         else
                         {
                             tmp->rigth = _a.allocate(1);
+                            _a.construct(tmp->rigth ,ft::node<value_type>(x));
                         }
-                        _a.construct(tmp->rigth ,ft::node<value_type>(x));
                         tmp->rigth->parents = tmp;
                         tmp = tmp->rigth;
                         break;
                     }
                     tmp = tmp->rigth;
             }
-        } 
+        }
+  
          if (tmp != NULL)
-            equilibre(tmp);
+         {
+           //  std::cout << "AVANT EQUI" << std::endl;
+            this->print_tab();
+              //          std::cout << "AVANT EQUI" << std::endl;
+             if ( tmp->parents == NULL|| tmp->parents->color == ROUGE)
+             {
+                
+                    equilibre(tmp);
+              }  //     std::cout << "APRES EQUI" << std::endl;
+
+                    //     std::cout << "APRES EQUI" << std::endl;
+         }
     }
     return ft::pair<iterator, bool>();
 }

@@ -41,27 +41,21 @@ template< class T>
    // Iterator& operator+=(difference_type n){ p += n; return *this;}
    // Iterator& operator-=(difference_type n){ p -= n; return *this;}
     Iterator& operator++() 
-    { 
-        if (p->partents == NULL || p->parents->ritgh != p)
+    {
 
-        while (p->parents && p->parents->rigth == p)
-            p == p->parents
-            return p;
-        if (p->parents && p->parents->rig)
-            if (p->i)
-        if (p->parents && p->parents->left)
-        if (!p->parents || p->parents->left == p)
-        {
-
-        }     
-
-
-        if (p->left && !p->right)
-            p = p->rigth;
-        if (!p->parents && p->parent->left == p)
-            p = p->parents 
-        return *this;
+        if (p->rigth != NULL)
+            {
+                p = p->rigth;
+                while (p->left)
+                    p = p->left;
+                return *this;
+            }
+            while (p->parents != NULL && p->parents->rigth == p)
+                p = p->parents;
+            p = p->parents;
+            return *this;
     }
+
     Iterator operator++(int) {Iterator tmp(*this); operator++(); return tmp;}
     Iterator& operator--() {--p; return *this;}
     Iterator operator--(int) {Iterator tmp(*this); operator--(); return tmp;}
@@ -71,6 +65,9 @@ template< class T>
     private:
         T* p;
     };
+        template< class TL, class TR >
+     bool operator!=(const Iterator<TL>& lhs,
+ const Iterator<TR>& rhs)  {return (&(*lhs) != &(*rhs));}
     /*
     template< class T >
     Iterator<T> operator+(typename Iterator<T>::difference_type n, const Iterator<T> & rhs)  { return ft::Iterator<T>(&(*rhs) + n);}
@@ -78,8 +75,6 @@ template< class T>
     typename ft::Iterator<TL>::difference_type operator-(const ft::Iterator<TL> & lhs, const ft::Iterator<TR> & rhs)  { return ((lhs.base()) - (rhs.base()));}
     template< class TL, class TR >
     bool operator==(const Iterator<TL>& lhs, const Iterator<TR>& rhs) {return (lhs.base() == rhs.base());}
-    template< class TL, class TR >
-    bool operator!=(const Iterator<TL>& lhs, const Iterator<TR>& rhs)  {return (&(*lhs) != &(*rhs));}
     template< class TL, class TR >
     bool operator>(const Iterator<TL>& lhs, const Iterator<TR>& rhs)   {return (&(*lhs) > &(*rhs));}
     template< class TL, class TR >
