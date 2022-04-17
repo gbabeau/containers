@@ -322,6 +322,7 @@ void equilibre(ft::node<value_type> *tmp)
                }
         }   
     }
+  //  equilibre(tmp->parents);
 }
 
 ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *node, ft::node<value_type> *node2)
@@ -404,9 +405,9 @@ ft::pair<iterator, bool> insert(const value_type& x)
          if (tmp != NULL)
          {
            //  std::cout << "AVANT EQUI" << std::endl;
-            this->print_tab();
+        //    this->print_tab();
               //          std::cout << "AVANT EQUI" << std::endl;
-             if ( tmp->parents == NULL|| tmp->parents->color == ROUGE)
+             if ( tmp->parents->color == ROUGE)
              {
                 
                     equilibre(tmp);
