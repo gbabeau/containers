@@ -30,6 +30,17 @@ namespace ft
         {
 
         }
+/*
+        bool father(node &a)
+        {
+
+        }
+
+        bool brother(node &a)
+        {
+
+        }
+*/
         node & operator=(node & a)
         {
         type = a.type;
@@ -40,6 +51,26 @@ namespace ft
         }
         T* operator->() const {return &(operator*());}
         T& operator*() const {return type;}  
+
+            node* operator++() 
+            {
+                node *tmp = this;
+            std::cout << "AAAAA" << std::endl;
+            if (tmp->rigth != NULL)
+            {
+                tmp = tmp->rigth;
+                while (tmp->left)
+                    tmp = tmp->left;
+
+              //  this = tmp;
+                return tmp;
+            }
+            while (tmp->parents != NULL && tmp->parents->rigth == tmp)
+                tmp = tmp->parents;
+            tmp = tmp->parents;
+          //      this = tmp;
+            return tmp;
+            }
     };
 }
 # endif

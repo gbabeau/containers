@@ -42,7 +42,9 @@ template< class T>
    // Iterator& operator-=(difference_type n){ p -= n; return *this;}
     Iterator& operator++() 
     {
-
+       p = ++(*p);
+        return *this;
+/*
         if (p->rigth != NULL)
             {
                 p = p->rigth;
@@ -54,6 +56,7 @@ template< class T>
                 p = p->parents;
             p = p->parents;
             return *this;
+            */
     }
 
     Iterator operator++(int) {Iterator tmp(*this); operator++(); return tmp;}

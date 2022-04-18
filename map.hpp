@@ -158,7 +158,7 @@ T& operator[](const key_type& x)
             else
             {
                 if (tmp[i]->color == ROUGE)
-                    std::cout << REDCOL << "|"<< tmp[i]->type.first << '|' << RESET;
+                    std::cout << REDCOL << "|"<< tmp[i]->type.first << "|" << RESET;
                 else
                     std::cout << "|"<< tmp[i]->type.first <<"|";
             }
@@ -212,7 +212,7 @@ T& operator[](const key_type& x)
             i++;
      //   std::cout << "NOMBRE DE LIGNE " << i << std::endl;
         }
-        std::cout << std::endl <<"NOMBRE DE LIGNE " << i << std::endl;
+    //    std::cout << std::endl <<"NOMBRE DE LIGNE " << i << std::endl;
     }
 
     void color(ft::node<value_type> *GP, ft::node<value_type> *P)
@@ -290,7 +290,7 @@ void equilibre(ft::node<value_type> *tmp)
         {
             if (tmp->parents->rigth == tmp)
             {
-          //      std::cout << "cas 1" << std::endl;
+                //std::cout << "cas 1" << std::endl;
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->left,-1);
                 rotate(tmp->parents->parents ,tmp->parents, tmp, tmp->rigth,1);
                 equilibre(tmp->parents);
@@ -405,8 +405,8 @@ ft::pair<iterator, bool> insert(const value_type& x)
          if (tmp != NULL)
          {
            //  std::cout << "AVANT EQUI" << std::endl;
-        //    this->print_tab();
-              //          std::cout << "AVANT EQUI" << std::endl;
+             //   this->print_tab();
+                ///        std::cout << "AVANT EQUI" << std::endl;
              if ( tmp->parents->color == ROUGE)
              {
                 
@@ -422,8 +422,198 @@ iterator insert(iterator position, const value_type& x);
 
 template <class InputIterator>
 void insert(InputIterator first, InputIterator last);
+
 void erase(iterator position);
-size_type erase(const key_type& x);
+
+
+
+void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
+{
+    if (frere->parents->left == frere)
+    {
+        if (frere->left != NULL && frere->left->color == ROUGE)
+        {
+            rotate(tmp2->parents ,tmp2, frere, frere->rigth, 0);
+            return;
+        }
+        else
+        {
+            //std::cout << "cas 1 " << frere->rigth->rigth << " " << tmp2 << "  " << frere->rigth->left<< std::endl;
+                rotate(tmp2 ,frere, frere->rigth,  frere->rigth->rigth, -1);
+             //this->print_tab();
+             //std::cout << "cas 1 " <<  tmp2->type.first << " " << frere->parents->rigth << std::endl;
+                rotate(tmp2->parents , tmp2, frere->parents,  frere->parents->rigth, 0);
+                return;
+        }
+
+    }
+    else
+    {
+
+        if (frere->rigth != _ptrfin && frere->rigth != NULL && frere->rigth->color == ROUGE)
+        {
+              rotate(tmp2->parents ,tmp2, frere, frere->left, 0);
+            return;
+        }
+        else
+        {
+                
+                rotate(tmp2 ,frere, frere->left,  frere->left->left,-1);
+                      rotate(tmp2->parents , tmp2, frere->parents,  frere->parents->left, 0);
+                return;
+        }
+
+    }
+}
+
+size_type erase(const key_type& x)
+{
+   node<value_type> *tmp = _node;
+    std::allocator<ft::node<value_type> > _a;
+    int u;
+    int v;
+    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+     node<value_type> *tmp2 = tmp->parents;
+    node<value_type> *tmp3 = tmp;
+     v = tmp->color;
+    if (tmp->rigth == NULL && tmp->left == NULL)
+    {
+        std::cout << "RACCINE CAS" << std::endl;
+        if (tmp2->left == tmp)
+            tmp2->left = NULL;
+        else
+            tmp2->rigth = NULL;
+       
+        u = NOIR;
+        _a.destroy(tmp);
+        tmp3 = NULL;
+    }
+    else if ( tmp->left == NULL || tmp->rigth == NULL )
+    {
+                std::cout << "CAS 1 fils" << std::endl;
+        if (tmp->left == NULL)
+        {  
+            tmp->rigth->parents = tmp2;
+             tmp3 = tmp->rigth;
+            u = tmp3->color;
+             if (tmp2->left == tmp)
+                tmp2->left = tmp->rigth;
+            else
+                tmp2->rigth = tmp->rigth;
+            _a.destroy(tmp);
+        }
+        else
+        {
+                           
+            tmp->left->parents = tmp2;
+            tmp3 = tmp->left;
+            u = tmp3->color;
+             if (tmp2->left == tmp)
+                tmp2->left = tmp->left;             
+                else
+                tmp2->rigth = tmp->left;
+            _a.destroy(tmp);
+        }
+    }
+    else
+    {        std::cout << "CAS 2 fils" << std::endl;
+            tmp3->parents = tmp2;
+
+           
+            tmp3 = ++(*tmp3);
+            std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
+             if (tmp2)
+            {
+             if (tmp2->left == tmp)
+                tmp2->left = tmp3;
+             else
+                tmp2->rigth = tmp3;
+            }   
+              std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
+           
+            u = tmp3->color;
+            if (tmp->left != tmp3)
+            tmp3->left = tmp->left;
+            else 
+            tmp3->left = NULL;
+             if (tmp->rigth != tmp3)
+            tmp3->rigth = tmp->rigth;
+             else 
+            tmp3->rigth = NULL;
+
+            if (tmp3->parents->left == tmp3)
+                tmp3->parents->left = NULL;
+            else
+                tmp3->parents->rigth = NULL;
+            std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
+           
+            _a.destroy(tmp);
+            tmp = NULL;
+          //  this->print_tab();
+    }
+    node<value_type> *frere;
+ //std::cout << "ABBBAAAAA" << tmp2 << std::endl;
+    if (tmp2)
+    {
+        if (tmp2->left == tmp3)
+        frere = tmp2->rigth;
+        else
+        frere = tmp2->left;
+    }
+    else
+    frere = NULL;
+   //std::cout << "ABBBAAAAA" << std::endl;
+    if (u == ROUGE || v == ROUGE)
+    {
+        if (tmp3)
+            tmp3->color = NOIR;
+    //     std::cout << "ABBBAAAAA" << tmp3->type.first << " " << tmp2->type.first << std::endl;
+        return 1;
+    }
+ //   std::cout << "ABBBAAAAA " << frere->type.first << " " << tmp2 << std::endl;
+    if (frere != NULL && frere != _ptrfin && ((frere->left != NULL  && frere->left->color == ROUGE ) || (frere->rigth != NULL && frere->rigth != _ptrfin && frere->rigth->color == ROUGE)))
+    {
+        std::cout << "frere et fils" << std::endl;
+            this->rotatedelet(tmp2, frere);
+            _node->color = NOIR;
+            return 1;
+    }
+    if (frere != NULL && frere != _ptrfin)
+    {
+        frere->color = ROUGE;
+        _node->color = NOIR;
+        return 1;
+    }
+    if (frere != NULL && frere != _ptrfin && frere->color == ROUGE)
+    {
+        if (frere->parents->left == frere)    
+                rotate(tmp2->parents, tmp2, frere,  frere->rigth, 1);
+        else   
+                rotate(tmp2->parents, tmp2, frere,  frere->left, 1);
+        _node->color = NOIR;
+        return 1;
+    }
+    if (frere != NULL && frere->color == NOIR)
+    {
+        frere->color= ROUGE;
+    }
+    if (frere == NULL || frere->left->color == NOIR ||  frere->rigth->color == NOIR)
+    {
+        while (tmp3 && tmp3->color == NOIR)
+        {
+
+
+        }
+    }
+    _node->color = NOIR;
+    return (1);
+}
 void erase(iterator first, iterator last);
 void swap(map<Key,T,Compare,Allocator>&);
 void clear();
