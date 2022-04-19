@@ -1,5 +1,5 @@
 #ifndef VECTOR_HPP
-#endif 
+#define VECTOR_HPP
 #include "iterator.hpp"
 #include <memory>
 #include <stdexcept>
@@ -91,7 +91,7 @@ namespace ft
         }
 
         //// ITERATOS ////    
-        iterator begin()  {  return iterator(&_p[0]);;}
+        iterator begin()  {  return iterator(&_p[0]);}
         iterator end()  {iterator a(_p + _size); return a;}
         const_iterator begin() const { const_iterator a(_p); return a;}
         const_iterator end() const { const_iterator a(_p + _size); return a;}
@@ -444,4 +444,5 @@ bool operator>=(const vector<T,Allocator>& x,
 const vector<T,Allocator>& y) { return !(x < y);}
 
 
-};
+}
+#endif

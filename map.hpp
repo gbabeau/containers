@@ -1,13 +1,9 @@
 # ifndef MAP_HPP
 #define MAP_HPP
 
+#include "vector.hpp"
 #include "iterator_map.hpp"
-#include <memory>
-#include <stdexcept>
 #include <functional>
-#include "is_integral.hpp"
-#include "enable_if.hpp"
-#include "lexicograpfical_copare.hpp"
 #include "node.hpp"
 #include "pair.hpp"
 #include <unistd.h>
@@ -48,8 +44,8 @@ typedef typename Allocator::reference reference;
 typedef typename Allocator::const_reference const_reference;
 
         typedef std::size_t size_type;
-        typedef ft::Iterator< ft::node<value_type> > iterator;
-        typedef ft::Iterator< const ft::node<value_type> > const_iterator;
+        typedef ft::Iterator_map< ft::node<value_type> > iterator;
+        typedef ft::Iterator_map< const ft::node<value_type> > const_iterator;
         typedef std::ptrdiff_t difference_type;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef  ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -338,87 +334,86 @@ ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *no
     return (node);
 }
 
-ft::pair<iterator, bool> insert(const value_type& x)
+
+node<value_type>* node_construct( node<value_type> *node_p ,node<value_type>* node_f, node<value_type> node_new)
 {
-        std::allocator<ft::node<value_type> > _a;
-    if (_node == NULL)
-    {
-     //    std::cout << "racine mise" << std::endl;
-        _node = alloc_insert(x, _node, NULL);
-        _ptrdeb = _node;
-        _node->rigth = _ptrfin;  
-        _node->color = NOIR;
-            return ft::pair<iterator, bool>();
-    }
-    else
-    {
-        node<value_type> *tmp = _node;
+                        std::allocator<ft::node<value_type> > _a;
+                        node_f = _a.allocate(1);
+                        _a.construct(node_f , ft::node<value_type>(node_new));
+                        if (node_f->parents != NULL)
+                         std::cout <<std::endl <<"P " << node_f->parents->type.first << std::endl;
+                        node_f->parents = node_p;
+                         return node_f;
+}
+
+ft::pair<iterator,bool> insert_node(ft::node<value_type> *nodes, const value_type& x)
+{
+       node<value_type> *tmp = nodes;
         while (tmp != NULL)
         {
             if (tmp->type.first >= x.first)
-            {;
-                    if (tmp->left == NULL)
+            {
+                    if (tmp->left == NULL) 
                     {
-                    tmp->left = _a.allocate(1);
-                    _a.construct(tmp->left ,ft::node<value_type>(x));
-                    tmp->left->parents = tmp;
-                    tmp = tmp->left;
-                    if (tmp->parents == _ptrdeb)
-                        _ptrdeb = tmp;
-                    break;
+                        tmp->left = this->node_construct(tmp ,tmp->left, ft::node<value_type>(x, tmp));
+                        tmp = tmp->left;
+                        if (tmp->parents == _ptrdeb)
+                            _ptrdeb = tmp;
+                        break;
                     }
                     tmp = tmp->left;
-                /*
-                tmp = alloc_insert(x, tmp->left, tmp);
-                std::cout << "left enfant" << std::endl;
-                */
             }
             else
             {
- 
-                    if (tmp->rigth == NULL || tmp->rigth == _ptrfin)
+                    if (tmp->rigth == NULL || tmp->rigth == _ptrfin) 
                     {
-   
-                        if (tmp->rigth == _ptrfin)
-                        {
-          
-                            tmp->rigth = _a.allocate(1);
-                             _a.construct(tmp->rigth ,ft::node<value_type>(x));
-
-                            tmp->rigth->rigth = _ptrfin;
-          
-                         //   _ptrfin->parents = tmp->rigth;
-                        }
-                        else
-                        {
-                            tmp->rigth = _a.allocate(1);
-                            _a.construct(tmp->rigth ,ft::node<value_type>(x));
-                        }
-                        tmp->rigth->parents = tmp;
+                        tmp->rigth = this->node_construct(tmp, tmp->rigth, ft::node<value_type>(x, tmp, tmp->rigth));
                         tmp = tmp->rigth;
                         break;
                     }
                     tmp = tmp->rigth;
             }
         }
-  
-         if (tmp != NULL)
-         {
-           //  std::cout << "AVANT EQUI" << std::endl;
-             //   this->print_tab();
-                ///        std::cout << "AVANT EQUI" << std::endl;
-             if ( tmp->parents->color == ROUGE)
-             {
-                
+         if (tmp != NULL && tmp->parents->color == ROUGE)      
                     equilibre(tmp);
-              }  //     std::cout << "APRES EQUI" << std::endl;
-
-                    //     std::cout << "APRES EQUI" << std::endl;
-         }
-    }
-    return ft::pair<iterator, bool>();
+        return ft::pair<iterator, bool>();
 }
-iterator insert(iterator position, const value_type& x);
+
+
+
+ft::pair<iterator, bool> insert(const value_type& x)
+{
+        std::allocator<ft::node<value_type> > _a;
+    if (_node == NULL)
+    {
+        _node = this->node_construct( NULL , _node, ft::node<value_type>(x));
+        _ptrdeb = _node;
+        _node->rigth = _ptrfin;  
+        _node->color = NOIR;
+        return ft::pair<iterator, bool>();
+    }
+    return insert_node(_node,  x);
+}
+
+iterator insert(iterator position, const value_type& x)
+{
+    ft::node<value_type> *tmp = _node;
+
+    if ( x.first > position->first   )
+    {
+        std::cout << "TAMER" << std::endl;
+        ++position;
+    if ( position->first > x.first )
+    {
+        std::cout << "OUI" << std::endl;
+        tmp = position.base();
+    }   
+    }
+    std::cout << "TAMER" << std::endl;
+        
+    return  insert_node(tmp, x).first;
+
+}
 
 template <class InputIterator>
 void insert(InputIterator first, InputIterator last);

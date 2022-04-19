@@ -22,14 +22,31 @@ namespace ft
         {
 
         }
-        node(T const & tt, node parentss) : type(tt), color(ROUGE) , left(NULL) , rigth(NULL) , parents(parentss)  
+        node(T const & tt, node *parentss) : type(tt), color(ROUGE)
         {
+            left = NULL;
+            rigth = NULL;
+            parents = parentss;
+            if (parents != NULL)
+            {
+             //   left = parents->left;
+             //   rigth = parents->rigth;
+            }
+        }
 
+         node(T const & tt, node *parentss, node *ri) : type(tt), color(ROUGE)
+        {
+            left = NULL;
+            rigth = NULL;
+            parents = parentss;
+            if (parents != NULL)
+               rigth = ri;
         }
         node(node const &node) : type(node.type) , color(node.color), left(node.left) , rigth(node.rigth) , parents(node.parents)  
         {
 
         }
+
 /*
         bool father(node &a)
         {
