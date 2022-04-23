@@ -23,6 +23,7 @@ template< class T>
    explicit Iterator_map(T* x) : p(x) {}
     template<class V>
     Iterator_map(const Iterator_map<V>& mit) : p(mit.base()) {}
+    
 
     template<class V>
     Iterator_map& operator=(const Iterator_map<V>& mit){ p = mit.base(); return *this;}
@@ -50,9 +51,25 @@ template< class T>
             */
     }
 
-    Iterator_map operator++(int) {Iterator_map tmp(*this); operator++(); return tmp;}
-    Iterator_map& operator--() {--p; return *this;}
-    Iterator_map operator--(int) {Iterator_map tmp(*this); operator--(); return tmp;}
+    Iterator_map operator++(int) 
+    {
+         Iterator_map tmp = Iterator_map(this->base());
+         p = ++(*p);
+        return tmp;
+    }
+    Iterator_map& operator--() 
+    {
+       p = --(*p);
+        return *this;
+    }
+
+    Iterator_map operator--(int) 
+    {
+         Iterator_map tmp =  Iterator_map(this->base());
+         p = --(*p);
+        return tmp;
+
+    }
     //Iterator operator-(difference_type n) const { return Iterator_map(p - n);}
     //Iterator operator+(difference_type n) const { return Iterator_map(p + n);}
     pointer base() const {return p;}
@@ -60,8 +77,11 @@ template< class T>
         T* p;
     };
         template< class TL, class TR >
-     bool operator!=(const Iterator_map<TL>& lhs,
- const Iterator_map<TR>& rhs)  {return (&(*lhs) != &(*rhs));}
+     bool operator!=(const Iterator_map<ft::node<TL> >& lhs,
+ const Iterator_map<ft::node<TR> >& rhs)  {return (lhs.base() != rhs.base());}
+         template< class TL, class TR >
+     bool operator==(const Iterator_map<TL>& lhs,
+ const Iterator_map<TR>& rhs)  {return (lhs.base() != rhs.base());}
     /*
     template< class T >
     Iterator_map<T> operator+(typename Iterator_map<T>::difference_type n, const Iterator_map<T> & rhs)  { return ft::Iterator_map<T>(&(*rhs) + n);}

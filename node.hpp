@@ -69,9 +69,28 @@ namespace ft
         T* operator->() const {return &(operator*());}
         T& operator*() const {return type;}  
 
-            node* operator++() 
+            node* operator--()
             {
-                node *tmp = this;
+             node *tmp = this;
+            std::cout << "AAAAA" << std::endl;
+            if (tmp->left != NULL)
+            {
+                tmp = tmp->left;
+                while (tmp->rigth)
+                    tmp = tmp->rigth;
+
+              //  this = tmp;
+                return tmp;
+            }
+            while (tmp->parents != NULL && tmp->parents->left == tmp)
+                tmp = tmp->parents;
+            tmp = tmp->parents;
+          //      this = tmp;
+            return tmp;
+            }
+            node* operator++()
+            {
+                 node *tmp = this;
             std::cout << "AAAAA" << std::endl;
             if (tmp->rigth != NULL)
             {
@@ -89,5 +108,13 @@ namespace ft
             return tmp;
             }
     };
+    template<class value_type>
+    void swapnode(node<value_type> *l, node<value_type> *r)
+    {
+        node<value_type> *tmp;
+        tmp = r;
+        r = l;
+        l = tmp;
+    }
 }
 # endif

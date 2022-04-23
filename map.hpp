@@ -2,7 +2,7 @@
 #define MAP_HPP
 
 #include "vector.hpp"
-#include "iterator_map.hpp"
+#include "const_iterator_map.hpp"
 #include <functional>
 #include "node.hpp"
 #include "pair.hpp"
@@ -45,7 +45,7 @@ typedef typename Allocator::const_reference const_reference;
 
         typedef std::size_t size_type;
         typedef ft::Iterator_map< ft::node<value_type> > iterator;
-        typedef ft::Iterator_map< const ft::node<value_type> > const_iterator;
+        typedef ft::Iterator_map< ft::node<value_type> > const_iterator;
         typedef std::ptrdiff_t difference_type;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef  ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -91,7 +91,13 @@ map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin
 {   
 }
 map<Key,T,Compare,Allocator>&
-operator=(const map<Key,T,Compare,Allocator>& x);
+operator=(const map<Key,T,Compare,Allocator>& x)
+{
+    this->clear();
+    this->insert(iterator(x._ptrdeb), iterator(x._ptrfin));
+
+    return *this;
+}
 // iterators:
 iterator begin()
 {
@@ -101,20 +107,17 @@ iterator begin()
         tmp = tmp->left;*/
     return (iterator(_ptrdeb));
 }
-const_iterator begin() const;
-iterator end()
-{
-    return (iterator(_ptrfin));
-}
-const_iterator end() const;
-reverse_iterator rbegin();
-const_reverse_iterator rbegin() const;
-reverse_iterator rend();
-const_reverse_iterator rend() const;
+const_iterator begin(void) const { return (const_iterator(_ptrfin)); }
+iterator end(void) {return (iterator(_ptrfin));}
+const_iterator end(void) const { return (iterator(_ptrfin));};
+reverse_iterator rbegin(void) { return (reverse_iterator(_ptrfin->parents));};
+const_reverse_iterator rbegin(void) const { return (const_reverse_iterator(_ptrfin->parents));};
+reverse_iterator rend(void){ return (reverse_iterator(_ptrdeb->left));};
+const_reverse_iterator rend(void) const { return (const_reverse_iterator(_ptrdeb->left));};
 // capacity:
-bool empty() const;
-size_type size() const;
-size_type max_size() const;
+bool empty() const {return (_size == 0);};
+size_type size() const {return (_size);};
+size_type max_size() const {return ( _alloc.max_size());};
 // 23.3.1.2 element access:
 T& operator[](const key_type& x)
 {
@@ -129,7 +132,7 @@ T& operator[](const key_type& x)
     }
 
     if (tmp->type.first == x)
-        return tmp->type.seconde;
+        return tmp->type.second;
     T *a = new T();
     return *a;
 }
@@ -416,10 +419,11 @@ iterator insert(iterator position, const value_type& x)
 }
 
 template <class InputIterator>
-void insert(InputIterator first, InputIterator last);
-
-void erase(iterator position);
-
+void insert(InputIterator first, InputIterator last)
+{
+    while (first != last)
+        insert((first++).base()->type);
+}
 
 
 void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
@@ -461,99 +465,72 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
     }
 }
 
-size_type erase(const key_type& x)
+ int erase_0(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp)
 {
-   node<value_type> *tmp = _node;
-    std::allocator<ft::node<value_type> > _a;
-    int u;
-    int v;
-    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
-    {
-        if (tmp->type.first > x)
-            tmp = tmp->left;
-        else
-            tmp = tmp->rigth;
-    }
-     node<value_type> *tmp2 = tmp->parents;
-    node<value_type> *tmp3 = tmp;
-     v = tmp->color;
-    if (tmp->rigth == NULL && tmp->left == NULL)
-    {
+        std::allocator<ft::node<value_type> > _a;
         std::cout << "RACCINE CAS" << std::endl;
         if (tmp2->left == tmp)
             tmp2->left = NULL;
         else
             tmp2->rigth = NULL;
-       
-        u = NOIR;
         _a.destroy(tmp);
+        _a.deallocate(tmp,1);
         tmp3 = NULL;
-    }
-    else if ( tmp->left == NULL || tmp->rigth == NULL )
-    {
-                std::cout << "CAS 1 fils" << std::endl;
-        if (tmp->left == NULL)
-        {  
-            tmp->rigth->parents = tmp2;
-             tmp3 = tmp->rigth;
-            u = tmp3->color;
-             if (tmp2->left == tmp)
-                tmp2->left = tmp->rigth;
-            else
-                tmp2->rigth = tmp->rigth;
-            _a.destroy(tmp);
-        }
-        else
-        {
-                           
-            tmp->left->parents = tmp2;
-            tmp3 = tmp->left;
-            u = tmp3->color;
-             if (tmp2->left == tmp)
-                tmp2->left = tmp->left;             
-                else
-                tmp2->rigth = tmp->left;
-            _a.destroy(tmp);
-        }
-    }
-    else
-    {        std::cout << "CAS 2 fils" << std::endl;
-            tmp3->parents = tmp2;
+        return NOIR;
+}
 
-           
+
+ int erase_1(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp, ft::node<value_type> *tmpf )
+{
+        std::allocator<ft::node<value_type> > _a;
+                    tmpf->parents = tmp2;
+                    tmp3 = tmpf;
+             if (tmp2->left == tmp)
+                tmp2->left = tmpf;
+            else
+                tmp2->rigth = tmpf;
+            _a.destroy(tmp);
+            _a.deallocate(tmp,1);
+            return tmp3->color;
+}
+
+int erase_2(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp)
+{
+            std::allocator<ft::node<value_type> > _a;
+     //      std::cout << "CAS 2 fils" << std::endl;
+            tmp3->parents = tmp2;           
             tmp3 = ++(*tmp3);
-            std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
+       //     std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
              if (tmp2)
             {
              if (tmp2->left == tmp)
                 tmp2->left = tmp3;
              else
                 tmp2->rigth = tmp3;
-            }   
-              std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
-           
-            u = tmp3->color;
+            } 
+         //     std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
             if (tmp->left != tmp3)
-            tmp3->left = tmp->left;
+                tmp3->left = tmp->left;
             else 
-            tmp3->left = NULL;
+                tmp3->left = NULL;
              if (tmp->rigth != tmp3)
-            tmp3->rigth = tmp->rigth;
-             else 
-            tmp3->rigth = NULL;
-
+                tmp3->rigth = tmp->rigth;
+            else 
+                tmp3->rigth = NULL;
             if (tmp3->parents->left == tmp3)
                 tmp3->parents->left = NULL;
             else
                 tmp3->parents->rigth = NULL;
-            std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
-           
+         //   std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
             _a.destroy(tmp);
+            _a.deallocate(tmp,1);
             tmp = NULL;
-          //  this->print_tab();
-    }
-    node<value_type> *frere;
- //std::cout << "ABBBAAAAA" << tmp2 << std::endl;
+            return tmp3->color;
+}
+
+ size_type   equilibredelite(int u, int v, ft::node<value_type> *tmp3, ft::node<value_type> *tmp2)
+ {
+         node<value_type> *frere;
     if (tmp2)
     {
         if (tmp2->left == tmp3)
@@ -563,8 +540,8 @@ size_type erase(const key_type& x)
     }
     else
     frere = NULL;
-   //std::cout << "ABBBAAAAA" << std::endl;
-    if (u == ROUGE || v == ROUGE)
+
+         if (u == ROUGE || v == ROUGE)
     {
         if (tmp3)
             tmp3->color = NOIR;
@@ -602,47 +579,227 @@ size_type erase(const key_type& x)
     {
         while (tmp3 && tmp3->color == NOIR)
         {
-
-
+            return 1;
         }
     }
     _node->color = NOIR;
     return (1);
+ }
+
+void erase(iterator position)
+{
+    node<value_type> *tmp = position.base();
+    node<value_type> *tmp2 = tmp->parents;
+    node<value_type> *tmp3 = tmp;
+    int v;
+    int u;
+     v = tmp->color;
+    if (tmp->rigth == NULL && tmp->left == NULL)
+    {
+       u = erase_0(tmp3, tmp2, tmp);
+    }
+    else if ( tmp->left == NULL || tmp->rigth == NULL )
+    {
+        std::cout << "CAS 1 fils" << std::endl;
+        if (tmp->left == NULL)
+        {  
+            u = erase_1(tmp3, tmp2, tmp, tmp->rigth);
+        }
+        else
+        {
+            u = erase_1(tmp3, tmp2, tmp, tmp->left);
+        }
+    }
+    else
+    { 
+        u = erase_2(tmp3, tmp2, tmp);
+          //  this->print_tab();
+    }
+    equilibredelite(u, v, tmp3, tmp2);
 }
-void erase(iterator first, iterator last);
-void swap(map<Key,T,Compare,Allocator>&);
-void clear();
+
+size_type erase(const key_type& x)
+{
+   iterator it;
+
+/*    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+    */
+    it = this->find(x);
+    this->erase(it);
+    return 1;
+
+}
+
+
+
+void erase(iterator first, iterator last)
+{
+
+    while (first != last)
+        erase(first++);
+    
+}
+
+void swap(map<Key,T,Compare,Allocator>& r)
+{
+    ft::swapnode(_node, r._node);
+    ft::swapnode(_ptrdeb, r._ptrdeb);
+    ft::swapnode(_ptrfin, r._ptrfin);
+    size_type size;
+    size = _size;
+    _size = r._size;
+    r._size = size;
+}
+
+void clear()
+{
+    while (_size)
+        erase(iterator(_ptrdeb));
+}
+
 // observers:
-key_compare key_comp() const;
-value_compare value_comp() const;
+key_compare key_comp() const
+{
+    return key_compare();
+
+}
+
+value_compare value_comp() const
+{
+
+    return value_compare();
+}
+
+iterator find(const key_type& x)
+{
+    node<value_type> *tmp = _node;
+
+    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+
+    if (tmp)
+        return iterator(tmp);
+    return iterator(_ptrfin);
+}
+
+const_iterator find(const key_type& x) const
+{
+    node<value_type> *tmp = _node;
+
+    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+
+    if (tmp)
+        return const_iterator(tmp);;
+    return const_iterator(NULL);
+}
+
+size_type count(const key_type& x)
+{
+    node<value_type> *tmp = _node;
+
+    while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if (tmp->type.first > x)
+            tmp = tmp->left;
+        else
+            tmp = tmp->rigth;
+    }
+
+    if (tmp)
+        return 1;
+    return 0;
+}
 
 
-iterator find(const key_type& x);
-const_iterator find(const key_type& x) const;
-size_type count(const key_type& x) const;
-iterator lower_bound(const key_type& x);
-const_iterator lower_bound(const key_type& x) const;
-iterator upper_bound(const key_type& x);
-const_iterator upper_bound(const key_type& x) const;
+iterator lower_bound(const key_type& x)
+{
+    return find(x);
+}
+
+
+const_iterator lower_bound(const key_type& x) const
+{
+
+    return find(x);
+}
+
+
+iterator upper_bound(const key_type& x)
+{
+    return ++find(x);
+}
+
+
+const_iterator upper_bound(const key_type& x) const
+{
+    return ++find(x);
+}
+
+
 ft::pair<iterator,iterator>
-equal_range(const key_type& x);
+equal_range(const key_type& x)
+{
+        return (ft::pair<iterator, iterator>(lower_bound(x), upper_bound(x)));
+}
+
+
 ft::pair<const_iterator,const_iterator>
-equal_range(const key_type& x) const;
+equal_range(const key_type& x) const
+{
+
+        return (ft::pair<const_iterator, const_iterator>(lower_bound(x), upper_bound(x)));
+}
+
+
     private:
         node<value_type>    *_node;
         allocator_type      _alloc;
         node<value_type>    *_ptrdeb;
         node<value_type>    *_ptrfin;
+        size_type           _size;
+        Compare               _comp;
 };
-
+/*
 template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
 template <class Key, class T, class Compare, class Allocator>bool operator< (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
 template <class Key, class T, class Compare, class Allocator>bool operator!=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
 template <class Key, class T, class Compare, class Allocator>bool operator> (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
 template <class Key, class T, class Compare, class Allocator>bool operator>=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
 template <class Key, class T, class Compare, class Allocator>bool operator<=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
+*/
 //specialized algorithms:
-template <class Key, class T, class Compare, class Allocator>void swap(map<Key,T,Compare,Allocator>& x,map<Key,T,Compare,Allocator>& y);
+ template <class Key, class T, class Compare, class Allocator> 
+  void swap(ft::map<Key,T,Compare,Allocator>& x, ft::map<Key,T,Compare,Allocator>& y)
+{
+    x.swap(y);
+
+    /*
+    ft::swapnode(x._node, y._node);
+    ft::swapnode(x._ptrdeb, y._ptrdeb);
+    ft::swapnode(x._ptrfin, y._ptrfin);
+    size_t size;
+    size = x._size;
+    x._size = y._size;
+    y._size = size;
+    */
+}
 
 }
 # endif
