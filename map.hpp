@@ -44,8 +44,8 @@ typedef typename Allocator::reference reference;
 typedef typename Allocator::const_reference const_reference;
 
         typedef std::size_t size_type;
-        typedef ft::Iterator_map< ft::node<value_type> > iterator;
-        typedef ft::Iterator_map< ft::node<value_type> > const_iterator;
+        typedef ft::Iterator_map< value_type > iterator;
+        typedef ft::Iterator_map< value_type > const_iterator;
         typedef std::ptrdiff_t difference_type;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef  ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -72,23 +72,34 @@ return comp(x.first, y.first);
 };
 // 23.3.1.1 construct/copy/destroy:
 explicit map(const Compare& comp = Compare(),
-const Allocator& = Allocator())
+const Allocator& = Allocator())  : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL) , _size(0) , _comp(comp)
 {
+    std::allocator<ft::node<value_type> > _a;
    _node = NULL;
     (void) comp;
+        _ptrfin = _a.allocate(1);
+        
+     _a.construct(_ptrfin , ft::node<value_type>(value_type(key_type(), mapped_type()), _node));
 }
+
 template <class InputIterator>
 map(InputIterator first, InputIterator last,
 const Compare& comp = Compare(), const Allocator& = Allocator());
-map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL)
+
+map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL) , _size(0) , _comp(Compare())
 {
     std::allocator<ft::node<value_type> > _a;
-    _ptrfin = _a.allocate(1);
-    // _a.construct(_ptrfin ,ft::node<value_type>());
+   _ptrfin = _a.allocate(1);
+     _a.construct(_ptrfin ,ft::node<value_type>());
     (void)x;
 }
 ~map()
 {   
+    std::allocator<ft::node<value_type> > _a;
+    this->clear();
+    
+    _a.destroy(_ptrfin);
+    _a.deallocate(_ptrfin, 1);
 }
 map<Key,T,Compare,Allocator>&
 operator=(const map<Key,T,Compare,Allocator>& x)
@@ -101,6 +112,7 @@ operator=(const map<Key,T,Compare,Allocator>& x)
 // iterators:
 iterator begin()
 {
+  //  std::cout << "AAAAAAA" << std::endl;
   /*  node<value_type> *tmp = _node;
 
     while (tmp->left != NULL)
@@ -110,10 +122,10 @@ iterator begin()
 const_iterator begin(void) const { return (const_iterator(_ptrfin)); }
 iterator end(void) {return (iterator(_ptrfin));}
 const_iterator end(void) const { return (iterator(_ptrfin));};
-reverse_iterator rbegin(void) { return (reverse_iterator(_ptrfin->parents));};
-const_reverse_iterator rbegin(void) const { return (const_reverse_iterator(_ptrfin->parents));};
-reverse_iterator rend(void){ return (reverse_iterator(_ptrdeb->left));};
-const_reverse_iterator rend(void) const { return (const_reverse_iterator(_ptrdeb->left));};
+reverse_iterator rbegin(void) { return (reverse_iterator(this->end()));};
+const_reverse_iterator rbegin(void) const { return (const_reverse_iterator(this->end()));};
+reverse_iterator rend(void){ return (reverse_iterator(this->begin()));};
+const_reverse_iterator rend(void) const { return (const_reverse_iterator(this->begin()));};
 // capacity:
 bool empty() const {return (_size == 0);};
 size_type size() const {return (_size);};
@@ -249,6 +261,9 @@ T& operator[](const key_type& x)
             GP->left = F;
         else
             GP->rigth = F;
+
+        if (F)
+        std::cout << "FF == "<<F->type.first << std::endl;
         if (P->left == F && i != 0)
             P->left = GP;
         else
@@ -333,6 +348,7 @@ ft::node<value_type>* alloc_insert(const value_type& x, ft::node<value_type> *no
          node = _a.allocate(1);
         _a.construct(node ,ft::node<value_type>(x));
         node->parents = node2;
+        _size++;
     }
     return (node);
 }
@@ -342,9 +358,10 @@ node<value_type>* node_construct( node<value_type> *node_p ,node<value_type>* no
 {
                         std::allocator<ft::node<value_type> > _a;
                         node_f = _a.allocate(1);
+                         _size++;
                         _a.construct(node_f , ft::node<value_type>(node_new));
                         if (node_f->parents != NULL)
-                         std::cout <<std::endl <<"P " << node_f->parents->type.first << std::endl;
+                     //   std::cout <<std::endl <<"P " << node_f->parents->type.first << std::endl;
                         node_f->parents = node_p;
                          return node_f;
 }
@@ -354,7 +371,7 @@ ft::pair<iterator,bool> insert_node(ft::node<value_type> *nodes, const value_typ
        node<value_type> *tmp = nodes;
         while (tmp != NULL)
         {
-            if (tmp->type.first >= x.first)
+            if (_comp(x.first, tmp->type.first))
             {
                     if (tmp->left == NULL) 
                     {
@@ -366,7 +383,7 @@ ft::pair<iterator,bool> insert_node(ft::node<value_type> *nodes, const value_typ
                     }
                     tmp = tmp->left;
             }
-            else
+            else if (_comp( tmp->type.first, x.first))
             {
                     if (tmp->rigth == NULL || tmp->rigth == _ptrfin) 
                     {
@@ -376,9 +393,13 @@ ft::pair<iterator,bool> insert_node(ft::node<value_type> *nodes, const value_typ
                     }
                     tmp = tmp->rigth;
             }
+            else
+                break;
         }
-         if (tmp != NULL && tmp->parents->color == ROUGE)      
+      //  std::cout << "sorti" << x.first  << std::endl;
+         if (tmp != NULL && tmp->parents->color == ROUGE)     
                     equilibre(tmp);
+      //  std::cout << "sorti" << x.first  << std::endl;
         return ft::pair<iterator, bool>();
 }
 
@@ -402,17 +423,17 @@ iterator insert(iterator position, const value_type& x)
 {
     ft::node<value_type> *tmp = _node;
 
-    if ( x.first > position->first   )
+    if ( _comp( x.first , position->first))
     {
-        std::cout << "TAMER" << std::endl;
+     //   std::cout << "TAMER" << std::endl;
         ++position;
-    if ( position->first > x.first )
+    if (_comp( position->first, x.first))
     {
-        std::cout << "OUI" << std::endl;
+      //  std::cout << "OUI" << std::endl;
         tmp = position.base();
     }   
     }
-    std::cout << "TAMER" << std::endl;
+   // std::cout << "TAMER" << std::endl;
         
     return  insert_node(tmp, x).first;
 
@@ -428,6 +449,7 @@ void insert(InputIterator first, InputIterator last)
 
 void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
 {
+
     if (frere->parents->left == frere)
     {
         if (frere->left != NULL && frere->left->color == ROUGE)
@@ -449,14 +471,22 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
     else
     {
 
+    std::cout << "cas 1 " << frere->rigth->rigth << " " << tmp2 << " FFFFF " << frere->rigth->left<< std::endl;
         if (frere->rigth != _ptrfin && frere->rigth != NULL && frere->rigth->color == ROUGE)
         {
-              rotate(tmp2->parents ,tmp2, frere, frere->left, 0);
+            this->print_tab();
+            std::cout << "tmp2 key " << tmp2->type.first << " frere key " << frere->type.first <<  frere->rigth->type.first << " FssFFFF " << frere->rigth->left<< std::endl;
+              rotate(tmp2->parents ,tmp2, frere, frere->left, 1);
+              if (tmp2)
+              tmp2->color = NOIR;
+              if (tmp2->rigth)
+              tmp2->rigth->color = NOIR;
+               this->print_tab();
             return;
         }
         else
         {
-                
+                 
                 rotate(tmp2 ,frere, frere->left,  frere->left->left,-1);
                       rotate(tmp2->parents , tmp2, frere->parents,  frere->parents->left, 0);
                 return;
@@ -465,33 +495,45 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
     }
 }
 
- int erase_0(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp)
+ int erase_0(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<value_type> **tmp)
 {
         std::allocator<ft::node<value_type> > _a;
-        std::cout << "RACCINE CAS" << std::endl;
-        if (tmp2->left == tmp)
-            tmp2->left = NULL;
+       // std::cout << "RACCINE CAS" << std::endl;
+        if ((*tmp2)->left == *tmp)
+            (*tmp2)->left = NULL;
         else
-            tmp2->rigth = NULL;
-        _a.destroy(tmp);
-        _a.deallocate(tmp,1);
-        tmp3 = NULL;
+            (*tmp2)->rigth = NULL;
+        if (*tmp == _ptrdeb)
+            _ptrdeb = (*tmp)->parents; 
+        _a.destroy(*tmp);
+        _a.deallocate(*tmp,1);
+        *tmp3 = NULL;
         return NOIR;
 }
 
 
- int erase_1(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp, ft::node<value_type> *tmpf )
+ int erase_1(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<value_type> **tmp, ft::node<value_type> *tmpf )
 {
         std::allocator<ft::node<value_type> > _a;
-                    tmpf->parents = tmp2;
-                    tmp3 = tmpf;
-             if (tmp2->left == tmp)
-                tmp2->left = tmpf;
+                    tmpf->parents = *tmp2;
+                    *tmp3 = tmpf;
+            if ((*tmp2))
+            {
+             if ((*tmp2)->left == *tmp)
+             {
+                (*tmp2)->left = tmpf;
+             }
             else
-                tmp2->rigth = tmpf;
-            _a.destroy(tmp);
-            _a.deallocate(tmp,1);
-            return tmp3->color;
+            {
+                (*tmp2)->rigth = tmpf; 
+            }
+            }
+            else
+            _node = tmpf;
+
+            _a.destroy(*tmp);
+            _a.deallocate(*tmp,1);
+            return (*tmp3)->color;
 }
 
 int erase_2(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value_type> *tmp)
@@ -540,18 +582,19 @@ int erase_2(ft::node<value_type> *tmp3,ft::node<value_type> *tmp2,ft::node<value
     }
     else
     frere = NULL;
+        std::cout << "cas 1 " << frere << std::endl;
 
          if (u == ROUGE || v == ROUGE)
     {
         if (tmp3)
             tmp3->color = NOIR;
-    //     std::cout << "ABBBAAAAA" << tmp3->type.first << " " << tmp2->type.first << std::endl;
+
         return 1;
     }
  //   std::cout << "ABBBAAAAA " << frere->type.first << " " << tmp2 << std::endl;
     if (frere != NULL && frere != _ptrfin && ((frere->left != NULL  && frere->left->color == ROUGE ) || (frere->rigth != NULL && frere->rigth != _ptrfin && frere->rigth->color == ROUGE)))
     {
-        std::cout << "frere et fils" << std::endl;
+         std::cout << "frere et fils" << std::endl;
             this->rotatedelet(tmp2, frere);
             _node->color = NOIR;
             return 1;
@@ -596,25 +639,38 @@ void erase(iterator position)
      v = tmp->color;
     if (tmp->rigth == NULL && tmp->left == NULL)
     {
-       u = erase_0(tmp3, tmp2, tmp);
+         std::cout << "CAS 0 fils" << std::endl;
+       u = erase_0(&tmp3, &tmp2, &tmp);
+       std::cout << "CAS 0 fils" << tmp3 << std::endl;
     }
     else if ( tmp->left == NULL || tmp->rigth == NULL )
     {
-        std::cout << "CAS 1 fils" << std::endl;
+        std::cout << "CAS 1 fils AAA" << std::endl;
         if (tmp->left == NULL)
         {  
-            u = erase_1(tmp3, tmp2, tmp, tmp->rigth);
+            if (tmp == _ptrdeb)
+                _ptrdeb = tmp->rigth; 
+            u = erase_1(&(tmp3), &(tmp2), &(tmp), tmp->rigth);
         }
         else
         {
-            u = erase_1(tmp3, tmp2, tmp, tmp->left);
+            u = erase_1(&tmp3, &tmp2, &tmp, tmp->left);
         }
+          std::cout << "CAS 1 fils AAA" << std::endl;
     }
     else
     { 
         u = erase_2(tmp3, tmp2, tmp);
           //  this->print_tab();
     }
+    --_size;
+    std::cout << "ABBBAAAsssssAA " << std::endl;
+    /*
+    if (tmp3)
+        std::cout << "ABBBAAAsssssAA " << tmp3->type.first << " " << tmp2->type.first << std::endl;
+    else
+     std::cout << "tmp3 == NULL"<< std::endl;
+     */
     equilibredelite(u, v, tmp3, tmp2);
 }
 
@@ -638,14 +694,6 @@ size_type erase(const key_type& x)
 
 
 
-void erase(iterator first, iterator last)
-{
-
-    while (first != last)
-        erase(first++);
-    
-}
-
 void swap(map<Key,T,Compare,Allocator>& r)
 {
     ft::swapnode(_node, r._node);
@@ -660,7 +708,13 @@ void swap(map<Key,T,Compare,Allocator>& r)
 void clear()
 {
     while (_size)
+    {
+        this->print_tab();
+        std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
+        this->print_tab();
         erase(iterator(_ptrdeb));
+         std::cout << "INCROYABLE  " << _size << std::endl;
+    }
 }
 
 // observers:
@@ -673,7 +727,7 @@ key_compare key_comp() const
 value_compare value_comp() const
 {
 
-    return value_compare();
+    return value_compare(_comp);
 }
 
 iterator find(const key_type& x)
@@ -774,16 +828,34 @@ equal_range(const key_type& x) const
         node<value_type>    *_ptrdeb;
         node<value_type>    *_ptrfin;
         size_type           _size;
-        Compare               _comp;
+        Compare             _comp;
 };
-/*
-template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-template <class Key, class T, class Compare, class Allocator>bool operator< (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-template <class Key, class T, class Compare, class Allocator>bool operator!=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-template <class Key, class T, class Compare, class Allocator>bool operator> (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-template <class Key, class T, class Compare, class Allocator>bool operator>=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-template <class Key, class T, class Compare, class Allocator>bool operator<=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y);
-*/
+
+template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+    return ( x.size() == y.size());
+}
+template <class Key, class T, class Compare, class Allocator>bool operator< (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+        return ( x.size() == y.size());
+}
+template <class Key, class T, class Compare, class Allocator>bool operator!=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+    return ( x.size() == y.size());
+}
+template <class Key, class T, class Compare, class Allocator>bool operator> (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+    return ( x.size() == y.size());
+}
+template <class Key, class T, class Compare, class Allocator>bool operator>=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+    return ( x.size() == y.size());
+}
+template <class Key, class T, class Compare, class Allocator>bool operator<=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+{
+    return ( x.size() == y.size());
+}
+
 //specialized algorithms:
  template <class Key, class T, class Compare, class Allocator> 
   void swap(ft::map<Key,T,Compare,Allocator>& x, ft::map<Key,T,Compare,Allocator>& y)

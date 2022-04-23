@@ -16,7 +16,7 @@ namespace ft
     node *parents;
 
 
-        node()
+        node() : type() , color(NOIR) ,left(NULL) , rigth(NULL) , parents(NULL)  
         {}
         node(T const & tt) : type(tt) , color(ROUGE) ,left(NULL) , rigth(NULL) , parents(NULL)  
         {
@@ -72,7 +72,7 @@ namespace ft
             node* operator--()
             {
              node *tmp = this;
-            std::cout << "AAAAA" << std::endl;
+        //    std::cout << "AAAAA" << std::endl;
             if (tmp->left != NULL)
             {
                 tmp = tmp->left;
@@ -91,8 +91,8 @@ namespace ft
             node* operator++()
             {
                  node *tmp = this;
-            std::cout << "AAAAA" << std::endl;
-            if (tmp->rigth != NULL)
+           // std::cout << "AAAAAl" << tmp->type.first << std::endl;
+            if (tmp->rigth != NULL )
             {
                 tmp = tmp->rigth;
                 while (tmp->left)

@@ -36,7 +36,7 @@ typename iterator_traits<Iterator>::reference>
 //    reverse_iterator& operator=(const reverse_iterator& mit){ p = mit.p; return *this;}
     pointer operator->() const {return &(operator*());}
     Iterator base() const {return _current;}
-    reference operator*() const {Iterator tmp = _current; return *(tmp-1);}
+    reference operator*() const {Iterator tmp = _current; return *(--tmp);}
     reference operator[](difference_type n){return _current[-n - 1];}
     reverse_iterator& operator+=(typename reverse_iterator<Iterator>::difference_type n){ /*_current -= n*/ _current = _current - n; return *this;}
      reverse_iterator& operator-=(typename reverse_iterator<Iterator>::difference_type n){ /*_current += n;*/_current = _current + n; return *this;}
