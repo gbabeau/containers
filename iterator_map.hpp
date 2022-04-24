@@ -82,7 +82,7 @@ template< class T>
  const Iterator_map<TR >& rhs)  {return (lhs.base() != rhs.base());}
          template< class TL, class TR >
      bool operator==(const Iterator_map<TL>& lhs,
- const Iterator_map<TR>& rhs)  {return (lhs.base() != rhs.base());}
+ const Iterator_map<TR>& rhs)  {return (lhs.base() == rhs.base());}
     /*
     template< class T >
     Iterator_map<T> operator+(typename Iterator_map<T>::difference_type n, const Iterator_map<T> & rhs)  { return ft::Iterator_map<T>(&(*rhs) + n);}

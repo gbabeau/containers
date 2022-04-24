@@ -72,7 +72,7 @@ namespace ft
             node* operator--()
             {
              node *tmp = this;
-        //    std::cout << "AAAAA" << std::endl;
+
             if (tmp->left != NULL)
             {
                 tmp = tmp->left;
@@ -80,12 +80,17 @@ namespace ft
                     tmp = tmp->rigth;
 
               //  this = tmp;
+        
                 return tmp;
             }
             while (tmp->parents != NULL && tmp->parents->left == tmp)
+            {
+               
                 tmp = tmp->parents;
+            }
             tmp = tmp->parents;
           //      this = tmp;
+               
             return tmp;
             }
             node* operator++()
