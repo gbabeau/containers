@@ -117,12 +117,11 @@ namespace ft
             }
     };
     template<class value_type>
-    void swapnode(node<value_type> *l, node<value_type> *r)
+    void swapnode(node<value_type> **l, node<value_type> **r)
     {
-        node<value_type> *tmp;
-        tmp = r;
-        r = l;
-        l = tmp;
+        node<value_type> *tmp = *r;
+        *r = *l;
+        *l = tmp;
     }
 }
 # endif

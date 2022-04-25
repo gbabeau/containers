@@ -5,7 +5,6 @@
 #include "const_iterator_map.hpp"
 #include <functional>
 #include "node.hpp"
-#include "pair.hpp"
 #include <unistd.h>
 
 
@@ -29,7 +28,19 @@
 
 
 namespace ft {
-
+template<class Key ,class T,  class Compare>
+    bool pred_map(ft::pair<const Key, T> a, ft::pair<const Key, T> b)
+    {
+        Compare c = Compare();
+        return (!c(a.first, b.first) &&  !c(b.first, a.first) && a.second == b.second);   
+    }   
+    template<class Key ,class T,  class Compare>
+    bool lac(ft::pair<const Key, T> a, ft::pair<const Key, T> b)
+    {
+        Compare c = Compare();
+        (void) c;
+        return ( (a.first < b.first  && a.second < b.second));   
+    }   
 
 template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
 class map {
@@ -77,15 +88,22 @@ const Allocator& = Allocator())  : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL) , _
     std::allocator<ft::node<value_type> > _a;
    _node = NULL;
     (void) comp;
-        _ptrfin = _a.allocate(1);
-        
+    _ptrfin = _a.allocate(1);
+    std::cout << "cette entre" << std::endl;    
      _a.construct(_ptrfin , ft::node<value_type>(value_type(key_type(), mapped_type()), _node));
      _ptrdeb = _ptrfin;
 }
 
 template <class InputIterator>
 map(InputIterator first, InputIterator last,
-const Compare& comp = Compare(), const Allocator& = Allocator());
+const Compare& comp = Compare(), const Allocator& = Allocator()) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL) , _size(0) , _comp(comp)
+{
+     std::allocator<ft::node<value_type> > _a;
+    _ptrfin = _a.allocate(1);    
+     _a.construct(_ptrfin , ft::node<value_type>(value_type(key_type(), mapped_type()), _node));
+     _ptrdeb = _ptrfin;
+     this->insert(first, last);
+}
 
 map(const map<Key,T,Compare,Allocator>& x) : _node(NULL), _ptrdeb(NULL), _ptrfin(NULL) , _size(0) , _comp(Compare())
 {
@@ -221,6 +239,13 @@ T& operator[](const key_type& x)
 
     void print_tab()
     {
+        if (_node == NULL)
+        {
+
+
+            std::cout << "VIDEE" << std::endl;
+            return;
+        }
         ft::node<value_type>    **tmp = new ft::node<value_type>*[1];
         //malloc( sizeof(ft::node<value_type>*) * 1);
         int                     n = 1;
@@ -426,7 +451,8 @@ ft::pair<iterator,bool> insert_node(ft::node<value_type> *nodes, const value_typ
                     tmp = tmp->rigth;
             }
             else
-                break;
+                return ft::pair<iterator, bool>(iterator(tmp), false);
+                
         }
       //  std::cout << "sorti" << x.first  << std::endl;
          if (tmp != NULL && tmp->parents->color == ROUGE)     
@@ -446,7 +472,7 @@ ft::pair<iterator, bool> insert(const value_type& x)
         _ptrdeb = _node;
         _node->rigth = _ptrfin;  
         _node->color = NOIR;
-        return ft::pair<iterator, bool>();
+        return ft::pair<iterator, bool>(iterator(_node), true);
     }
     return insert_node(_node,  x);
 }
@@ -525,9 +551,18 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
         }
         else
         {
-                 
-                rotate(tmp2 ,frere, frere->left,  frere->left->left,-1);
-                      rotate(tmp2->parents , tmp2, frere->parents,  frere->parents->left, 0);
+               
+                 if (frere->left != NULL)
+                rotate(frere->parents , frere, frere->left,  frere->left->rigth, 0);
+                else
+                {
+                    
+                    rotate(frere->parents , frere, frere->rigth,  NULL,-1);
+                }
+                        rotate(frere->parents->parents->parents , frere->parents->parents, frere->parents,  frere->parents->left, -1);
+                       
+
+                //rotate(tmp2->parents , tmp2, frere->parents,  frere->parents->left, 0);
                 return;
         }
 
@@ -591,7 +626,7 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
             std::allocator<ft::node<value_type> > _a;
             ft::node<value_type> tmp4 = **tmp3;
          //  std::cout << "CAS 2 fils" << (*tmp3)->type.first << std::endl;
-            (*tmp3)->parents = *tmp2;       
+                  
            // std::cout << "tmp3 fils" << (*tmp3)->type.first << std::endl;    
             *tmp3 = ++tmp4;
            // this->print_tab();
@@ -601,6 +636,7 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
           // std::cout << "tmp3 fils" << (*tmp3)->rigth << std::endl;
           //  std::cout << "tmp3 fils" << (*tmp3)->rigth->type.first << std::endl;
             ft::node<value_type> *tmp5 = (*tmp3)->rigth;
+       //     ft::node<value_type> *tmp6 = (*tmp3);
            //exit(1);
             if ((*tmp3)->parents->left != *tmp3)
                 *frere = (*tmp3)->parents->left;
@@ -622,36 +658,43 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
             {
             _node = *tmp3;
             }
+           
          //   this->print_tab();
          //   std::cout << "CAS 200 fils" << std::endl;
          //     std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
 
             if ((*tmp)->left != *tmp3)
+            {
                 (*tmp3)->left = (*tmp)->left;
+            }
             else 
                 (*tmp3)->left = NULL;
         //     std::cout << "CAS 2 fils" << std::endl;
              if ((*tmp)->rigth != *tmp3)
+             {
+
                 (*tmp3)->rigth = (*tmp)->rigth;
+             }
             else 
-                (*tmp3)->rigth = NULL;
+                (*tmp3)->rigth = tmp5;
          //   std::cout << "CAS 3 fils" << std::endl;
        //     std::cout << "CAS 33 fils" << std::endl;
        //     std::cout << tmp5->type.first << std::endl;
          
             if ((*tmp3)->parents)
             {
-           //    std::cout << "CAS 33 fils" << std::endl;
-                //std::cout << tmp5->rigth->type.first << std::endl;
+            //std::cout << tmp5->rigth->type.first << std::endl;
             if ((*tmp3)->parents->left == *tmp3)
             {
 
-        
+        //std::cout << "CAS 33 fils" << std::endl;
                 (*tmp3)->parents->left = tmp5;
                 
             }
             else
             {
+                //std::cout << (*tmp3)->parents->type.first << std::endl;
+               // std::cout << _node  << std::endl;
                 (*tmp3)->parents->rigth = tmp5;
             }
             if (tmp5)
@@ -667,7 +710,7 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
             _a.destroy(*tmp);
             _a.deallocate(*tmp,1);
             *tmp = NULL;
-
+          //  this->print_tab();
             return (*tmp3)->color;
 }
 
@@ -692,13 +735,13 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
             _node->color = NOIR;
             return 1;
     }
-    if (frere != NULL && frere != _ptrfin)
+  /*  if (frere != NULL && frere != _ptrfin)
     {
      //   std::cout << "incroyable" << std::endl;
         frere->color = ROUGE;
         _node->color = NOIR;
         return 1;
-    }
+    }*/
     if (frere != NULL && frere != _ptrfin && frere->color == ROUGE)
     {
     //    std::cout << "incroyable" << std::endl;
@@ -709,14 +752,24 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
         _node->color = NOIR;
         return 1;
     }
-    if (frere != NULL &&  frere != _ptrfin && frere->color == NOIR)
+    if ( (frere != NULL &&  frere != _ptrfin && frere->color == NOIR))
     {
-    //    std::cout << "incroyable 12" << std::endl;
+        std::cout << "incroyable 12" << std::endl;
+        if (frere != NULL)
         frere->color= ROUGE;
+        if (tmp2 == NULL)
+            return 1;
+        if (tmp2->parents == NULL )
+            equilibredelite( u, v, tmp3,tmp2->parents, NULL);
+        else if ( tmp2->parents->left == tmp2)
+            equilibredelite( u, v, tmp3,tmp2->parents, tmp2->parents->rigth);
+        else
+            equilibredelite( u, v, tmp3, tmp2->parents, tmp2->parents->left);
+        return 1;
     }
-    if (frere == NULL || frere == _ptrfin|| frere->left->color == NOIR ||  frere->rigth->color == NOIR)
+    if (frere == NULL || frere == _ptrfin || frere->left->color == NOIR ||  frere->rigth->color == NOIR)
     {
-       // std::cout << "incroyable 15" << std::endl;
+        std::cout << "incroyable 15" << std::endl;
         while (tmp3 && tmp3->color == NOIR)
         {
             return 1;
@@ -828,9 +881,9 @@ size_type erase(const key_type& x)
   // std::cout << "AAAA" << std::endl;
     it = this->find(x);
   //  std::cout << "AAAA" << std::endl;
-    this->erase(it);
+    if (it != this->end())
+        this->erase(it);
     return 1;
-
 }
 
 void erase(iterator first, iterator last)
@@ -855,9 +908,9 @@ void erase(iterator first, iterator last)
 
 void swap(map<Key,T,Compare,Allocator>& r)
 {
-    ft::swapnode(_node, r._node);
-    ft::swapnode(_ptrdeb, r._ptrdeb);
-    ft::swapnode(_ptrfin, r._ptrfin);
+    ft::swapnode(&_node, &r._node);
+    ft::swapnode(&_ptrdeb, &r._ptrdeb);
+    ft::swapnode(&_ptrfin, &r._ptrfin);
     size_type size;
     size = _size;
     _size = r._size;
@@ -866,17 +919,20 @@ void swap(map<Key,T,Compare,Allocator>& r)
 
 void clear()
 {
+    std::cout << "c'est apres" << _size << std::endl;
     while (_size)
     {
-      //  this->print_tab();
-     //  std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
+        int a;
+        this->print_tab();
+        std::cin >> a;
+       std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
       
         erase(iterator(_ptrdeb));
         
       //          this->print_tab();
      //    std::cout << "INCROYABLE  " << _size << std::endl;
     }
-    
+    std::cout << "c'est apres" << std::endl;
     _node = NULL;
     _ptrdeb = _ptrfin;
 }
@@ -957,7 +1013,24 @@ size_type count(const key_type& x)
 
 iterator lower_bound(const key_type& x)
 {
-    return find(x);
+        ft::node<value_type> *tmp = _node;
+     while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if ( _comp(tmp->type.first,x) && (tmp->rigth) )
+            tmp = tmp->rigth;
+        else if  (_comp(x,tmp->type.first) && (tmp->left) )
+            tmp = tmp->left;
+        else
+            break;
+    }
+
+    if (!_comp(x,tmp->type.first) && !_comp(tmp->type.first,x) )
+        return iterator(tmp);
+    if (_comp(x,tmp->type.first) && tmp != _ptrdeb)
+        return iterator(tmp);
+    if (tmp == _ptrfin)
+        return iterator(_ptrfin);
+    return iterator(_node);
 }
 
 
@@ -970,13 +1043,45 @@ const_iterator lower_bound(const key_type& x) const
 
 iterator upper_bound(const key_type& x)
 {
-    return ++find(x);
+    ft::node<value_type> *tmp = _node;
+     while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if ( _comp(tmp->type.first,x) && (tmp->rigth && tmp->rigth != _ptrfin) )
+            tmp = tmp->rigth;
+        else if  (_comp(x,tmp->type.first) && (tmp->left) )
+            tmp = tmp->left;
+        else
+            break;
+    }
+
+    if (!_comp(x,tmp->type.first) && !_comp(tmp->type.first,x) )
+        return ++iterator(tmp);
+    if (_comp(tmp->type.first,x) && tmp != _ptrfin)
+        return ++iterator(tmp);
+    if (tmp == _ptrfin)
+        return iterator(tmp);
+    return iterator(tmp);
 }
 
 
 const_iterator upper_bound(const key_type& x) const
 {
-    return ++find(x);
+        ft::node<value_type> *tmp = _node;
+     while ( (tmp->left != NULL || tmp->rigth != NULL) && tmp->type.first != x)
+    {
+        if ( _comp(tmp->type.first,x) && (tmp->rigth && tmp->rigth != _ptrfin) )
+            tmp = tmp->rigth;
+        else if  (_comp(x,tmp->type.first) && (tmp->left) )
+            tmp = tmp->left;
+        else
+            break;
+    }
+
+    if (!_comp(x,tmp->type.first) && !_comp(tmp->type.first,x) )
+        return ++const_iterator(tmp);
+    if (_comp(tmp->type.first,x))
+        return const_iterator(tmp);
+    return ++const_iterator(tmp);
 }
 
 
@@ -1004,29 +1109,31 @@ equal_range(const key_type& x) const
         Compare             _comp;
 };
 
-template <class Key, class T, class Compare, class Allocator>bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+template <class Key, class T, class Compare, class Allocator>
+bool operator==(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-    return ( x.size() == y.size());
+    return (x.size() == y.size() && ft::equal( x.begin(), x.end(), y.begin(), &ft::pred_map<Key, T, Compare>));
 }
-template <class Key, class T, class Compare, class Allocator>bool operator< (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
+template <class Key, class T, class Compare, class Allocator>
+bool operator< (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-        return ( x.size() == y.size());
+        return (ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end(), &ft::lac<Key, T, Compare>));
 }
 template <class Key, class T, class Compare, class Allocator>bool operator!=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-    return ( x.size() == y.size());
+    return !( x.size() == y.size());
 }
 template <class Key, class T, class Compare, class Allocator>bool operator> (const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-    return ( x.size() == y.size());
+    return ( y < x);
 }
 template <class Key, class T, class Compare, class Allocator>bool operator>=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-    return ( x.size() == y.size());
+    return !( x < y);
 }
 template <class Key, class T, class Compare, class Allocator>bool operator<=(const map<Key,T,Compare,Allocator>& x,const map<Key,T,Compare,Allocator>& y)
 {
-    return ( x.size() == y.size());
+    return !( x > y);
 }
 
 //specialized algorithms:
