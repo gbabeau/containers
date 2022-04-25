@@ -240,6 +240,18 @@ T& operator[](const key_type& x)
      //   std::cout << "NOMBRE DE LIGNE " << i << std::endl;
         }
     //    std::cout << std::endl <<"NOMBRE DE LIGNE " << i << std::endl;
+    std::cout << " _ptrfin : "<< _ptrfin->parents->type.first << std::endl;
+
+    if (_ptrfin->parents->rigth == _ptrfin)
+        std::cout << " _ptrfin : "<< "OK" << std::endl;
+    else
+        std::cout << " _ptrfin : "<< "KO" << std::endl;
+
+            if (_node->parents == NULL)
+        std::cout << " NODE : "<< "OK" << std::endl;
+    else
+        std::cout << " NODE : "<< "KO" << std::endl;
+    
     }
 
     void color(ft::node<value_type> *GP, ft::node<value_type> *P)
@@ -251,6 +263,7 @@ T& operator[](const key_type& x)
             P->rigth->color = ROUGE;
 
     }
+
      void color2(ft::node<value_type> *GP)
      {
           GP->color = ROUGE;
@@ -291,6 +304,7 @@ T& operator[](const key_type& x)
        if (i == 1)
             color(GP, P);
    }
+
 void equilibre(ft::node<value_type> *tmp)
 {
     if (tmp == NULL || tmp->parents == NULL || tmp->parents->parents == NULL)
@@ -493,11 +507,16 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
         if (frere->rigth != _ptrfin && frere->rigth != NULL && frere->rigth->color == ROUGE)
         {
 
-            std::cout << "incroyable" << std::endl;
+          //  std::cout << "incroyable 5661" << std::endl;
           //  this->print_tab();
-         //   std::cout << "tmp2 key " << tmp2->type.first << " frere key " << frere->type.first <<  frere->rigth->type.first << " FssFFFF " << frere->rigth->left<< std::endl;
-              rotate(tmp2->parents ,tmp2, frere, frere->left, 1);
-              if (tmp2)
+            
+           // std::cout << "frerer type firsr" << frere->type.first  << " FssFFFF " << std::endl;
+
+
+              rotate(frere->parents->parents , frere->parents, frere, frere->left, -1);
+             // if (tmp2)
+             //   std::cout << "incroyable 5451" << std::endl;
+           // this->print_tab();
               tmp2->color = NOIR;
               if (tmp2->rigth)
               tmp2->rigth->color = NOIR;
@@ -522,12 +541,15 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
         if ((*tmp2)->left == *tmp)
             (*tmp2)->left = NULL;
         else
-            (*tmp2)->rigth = NULL;
+            (*tmp2)->rigth = (*tmp)->rigth;
         if (*tmp == _ptrdeb)
             _ptrdeb = (*tmp)->parents; 
         _a.destroy(*tmp);
         _a.deallocate(*tmp,1);
         *tmp3 = NULL;
+        if ((*tmp2)->rigth == _ptrfin)
+            _ptrfin->parents = *tmp2;
+
         return NOIR;
 }
 
@@ -537,6 +559,8 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
         std::allocator<ft::node<value_type> > _a;
                     tmpf->parents = *tmp2;
                     *tmp3 = tmpf;
+          //  std::cout << "printd" << std::endl;
+          //  this->print_tab();
             if ((*tmp2))
             {
              if ((*tmp2)->left == *tmp)
@@ -549,22 +573,43 @@ void rotatedelet(node<value_type> *tmp2, node<value_type> *frere)
             }
             }
             else
+            {
             _node = tmpf;
+       //     std::cout << "aaa" << std::endl;
+            }
+
 
             _a.destroy(*tmp);
             _a.deallocate(*tmp,1);
+         //               std::cout << "printd" << std::endl;
+         //   this->print_tab();
             return (*tmp3)->color;
 }
 
-int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<value_type> **tmp)
+int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<value_type> **tmp,ft::node<value_type> **frere )
 {
             std::allocator<ft::node<value_type> > _a;
             ft::node<value_type> tmp4 = **tmp3;
-           std::cout << "CAS 2 fils" << (*tmp3)->type.first << std::endl;
-            (*tmp3)->parents = *tmp2;           
+         //  std::cout << "CAS 2 fils" << (*tmp3)->type.first << std::endl;
+            (*tmp3)->parents = *tmp2;       
+           // std::cout << "tmp3 fils" << (*tmp3)->type.first << std::endl;    
             *tmp3 = ++tmp4;
-            std::cout << "CAS 2 fils" << (*tmp3)->type.first << std::endl;
-             std::cout << "CAS 2 fils" << std::endl;
+           // this->print_tab();
+          //  std::cout << "tmp3 fils" << (*tmp3)->type.first << std::endl; 
+           // ft::node<value_type> tmp5 = **tmp3;
+          // std::cout << "tmp3 fils" << (*tmp3)->type.first << std::endl;
+          // std::cout << "tmp3 fils" << (*tmp3)->rigth << std::endl;
+          //  std::cout << "tmp3 fils" << (*tmp3)->rigth->type.first << std::endl;
+            ft::node<value_type> *tmp5 = (*tmp3)->rigth;
+           //exit(1);
+            if ((*tmp3)->parents->left != *tmp3)
+                *frere = (*tmp3)->parents->left;
+            else
+                *frere = (*tmp3)->parents->rigth;
+            
+         //   std::cout << "CAS 2 fils" << (*tmp3)->type.first << std::endl;
+
+         //    std::cout << "CAS 2 frere " <<   (*frere)->type.first<< std::endl;
           //  std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
              if (*tmp2)
             {
@@ -574,41 +619,62 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
                 (*tmp2)->rigth = *tmp3;
             }
             else
+            {
             _node = *tmp3;
-            this->print_tab();
-            std::cout << "CAS 2 fils" << std::endl;
+            }
+         //   this->print_tab();
+         //   std::cout << "CAS 200 fils" << std::endl;
          //     std::cout << "CAS 2 fils" << tmp3->type.first << std::endl;
+
             if ((*tmp)->left != *tmp3)
                 (*tmp3)->left = (*tmp)->left;
             else 
                 (*tmp3)->left = NULL;
-             std::cout << "CAS 2 fils" << std::endl;
+        //     std::cout << "CAS 2 fils" << std::endl;
              if ((*tmp)->rigth != *tmp3)
                 (*tmp3)->rigth = (*tmp)->rigth;
             else 
                 (*tmp3)->rigth = NULL;
-            std::cout << "CAS 3 fils" << std::endl;
+         //   std::cout << "CAS 3 fils" << std::endl;
+       //     std::cout << "CAS 33 fils" << std::endl;
+       //     std::cout << tmp5->type.first << std::endl;
+         
             if ((*tmp3)->parents)
             {
+           //    std::cout << "CAS 33 fils" << std::endl;
+                //std::cout << tmp5->rigth->type.first << std::endl;
             if ((*tmp3)->parents->left == *tmp3)
-                (*tmp3)->parents->left = NULL;
-            else
-                (*tmp3)->parents->rigth = NULL;
+            {
+
+        
+                (*tmp3)->parents->left = tmp5;
+                
             }
-            std::cout << "CAS 2 fils" << std::endl;
+            else
+            {
+                (*tmp3)->parents->rigth = tmp5;
+            }
+            if (tmp5)
+            tmp5->parents = (*tmp3);
+            }
+          //  std::cout << "CAS 2 fils" << std::endl;
+            if ((*tmp)->left) 
+            (*tmp)->left->parents = *tmp3;
+            if ((*tmp)->rigth) 
+            (*tmp)->rigth->parents = *tmp3;
+            (*tmp3)->parents = *tmp2;
+        //    (*tmp)->rigth->parents = *tmp3;
             _a.destroy(*tmp);
             _a.deallocate(*tmp,1);
             *tmp = NULL;
-            std::cout << "CAS 2 fils" << std::endl;
-            std::cout << "2 fils arbre" << std::endl;
-            this->print_tab();
+
             return (*tmp3)->color;
 }
 
  size_type   equilibredelite(int u, int v, ft::node<value_type> *tmp3, ft::node<value_type> *tmp2, ft::node<value_type> *frere)
  {
          
-//        std::cout << "cas 1 " << frere << std::endl;
+      //  std::cout << "cas 1 " << frere << std::endl;
 
          if (u == ROUGE || v == ROUGE)
     {
@@ -621,21 +687,21 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
     if (frere != NULL && frere != _ptrfin && ((frere->left != NULL  && frere->left->color == ROUGE ) || (frere->rigth != NULL && frere->rigth != _ptrfin && frere->rigth->color == ROUGE)))
     {
      //    std::cout << "frere et fils" << std::endl;
-             std::cout << "incroyable" << std::endl;
-            this->rotatedelet(tmp2, frere);
+          //   std::cout << "incroyable 11" << std::endl;
+            this->rotatedelet(frere->parents, frere);
             _node->color = NOIR;
             return 1;
     }
     if (frere != NULL && frere != _ptrfin)
     {
-        std::cout << "incroyable" << std::endl;
+     //   std::cout << "incroyable" << std::endl;
         frere->color = ROUGE;
         _node->color = NOIR;
         return 1;
     }
     if (frere != NULL && frere != _ptrfin && frere->color == ROUGE)
     {
-        std::cout << "incroyable" << std::endl;
+    //    std::cout << "incroyable" << std::endl;
         if (frere->parents->left == frere)    
                 rotate(tmp2->parents, tmp2, frere,  frere->rigth, 1);
         else   
@@ -643,14 +709,14 @@ int erase_2(ft::node<value_type> **tmp3,ft::node<value_type> **tmp2,ft::node<val
         _node->color = NOIR;
         return 1;
     }
-    if (frere != NULL && frere->color == NOIR)
+    if (frere != NULL &&  frere != _ptrfin && frere->color == NOIR)
     {
-        std::cout << "incroyable" << std::endl;
+    //    std::cout << "incroyable 12" << std::endl;
         frere->color= ROUGE;
     }
-    if (frere == NULL || frere->left->color == NOIR ||  frere->rigth->color == NOIR)
+    if (frere == NULL || frere == _ptrfin|| frere->left->color == NOIR ||  frere->rigth->color == NOIR)
     {
-        std::cout << "incroyable 1" << std::endl;
+       // std::cout << "incroyable 15" << std::endl;
         while (tmp3 && tmp3->color == NOIR)
         {
             return 1;
@@ -668,31 +734,55 @@ void erase(iterator position)
     node<value_type> *frere;
     int v;
     int u;
+   // this->print_tab();
      v = tmp->color;
-    if (tmp->rigth == NULL && tmp->left == NULL)
+    if ((tmp->rigth == NULL || tmp->rigth == _ptrfin) && tmp->left == NULL)
     {
-     //    std::cout << "CAS 0 fils" << std::endl;
-       u = erase_0(&tmp3, &tmp2, &tmp);
-       if (tmp->parents)
+       //  std::cout << "CAS 0 fils AA" << std::endl;
+        if (tmp->parents)
+       {
             if (tmp->parents->left == tmp )
-            frere = tmp->parents->rigth;
+                frere = tmp->parents->rigth;
             else
-             frere = tmp->parents->left;
+                frere = tmp->parents->left;
+       }
+       else
+            frere = NULL;
+            /*
             if (tmp == _ptrdeb)
-                _ptrdeb = tmp->rigth; 
-       frere = NULL;
-    //   std::cout << "CAS 0 fils" << tmp3 << std::endl;
+                _ptrdeb = tmp->parents; 
+           if (tmp->rigth == _ptrfin)
+           {
+                tmp->parents->rigth = _ptrfin;
+                _ptrfin->parents = tmp->parents;
+           }    
+        */
+       if (_size==1)
+       {
+           std::allocator<ft::node<value_type> > _a;
+            _a.destroy(tmp);
+            _a.deallocate(tmp,1);
+            _ptrdeb =  _ptrfin ;
+            _node = NULL;
+            _size = 0;
+            return;
+       }
+
+       u = erase_0(&tmp3, &tmp2, &tmp);
+        //    this->print_tab();
+      
+     // std::cout << "CAS 0 fils" << tmp3 << std::endl;
     }
-    else if ( tmp->left == NULL || tmp->rigth == NULL )
+    else if ( tmp->left == NULL || tmp->rigth == NULL || tmp->rigth == _ptrfin)
     {
      //   std::cout << "CAS 1 fils AAA" << std::endl;
+        frere = NULL;
         if (tmp->left == NULL)
         {  
-            if (tmp->parents)
-            if (tmp->parents->left == )
-            frere =
             if (tmp == _ptrdeb)
                 _ptrdeb = tmp->rigth; 
+
+        //    std::cout <<"  OK " << tmp2 << std::endl;
             u = erase_1(&(tmp3), &(tmp2), &(tmp), tmp->rigth);
         }
         else
@@ -703,18 +793,23 @@ void erase(iterator position)
     }
     else
     { 
-        u = erase_2(&tmp3, &tmp2, &tmp);
-          //  this->print_tab();
+      //  this->print_tab();
+        u = erase_2(&tmp3, &tmp2, &tmp, &frere);
+       //    this->print_tab();
     }
     --_size;
-    std::cout << "ABBBAAAsssssAA " << std::endl;
+   // std::cout << "ABBBAAAsssssAA " << std::endl;
+  //  if (tmp2)
+    //std::cout << tmp2->parents  << std::endl;
+    //std::cout << frere << std::endl;
     /*
     if (tmp3)
         std::cout << "ABBBAAAsssssAA " << tmp3->type.first << " " << tmp2->type.first << std::endl;
     else
      std::cout << "tmp3 == NULL"<< std::endl;
      */
-    equilibredelite(u, v, tmp3, tmp2);
+   // std::cout << "UB" << std::endl;
+    equilibredelite(u, v, tmp3, tmp2, frere);
 }
 
 
@@ -730,9 +825,9 @@ size_type erase(const key_type& x)
             tmp = tmp->rigth;
     }
     */
-   std::cout << "AAAA" << std::endl;
+  // std::cout << "AAAA" << std::endl;
     it = this->find(x);
-    std::cout << "AAAA" << std::endl;
+  //  std::cout << "AAAA" << std::endl;
     this->erase(it);
     return 1;
 
@@ -740,19 +835,22 @@ size_type erase(const key_type& x)
 
 void erase(iterator first, iterator last)
 {
-
+// std::cout << "ERRRASE" << std::endl;
      while (first != last)
     {
       //  this->print_tab();
       //  std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
      //   this->print_tab();
-         this->print_tab();
-        erase(first);
-       this->print_tab();
+       //  this->print_tab();
+      // iteraor tmp = first;
+  //    std::cout << "ERRRASE" << std::endl;
+      //  this->print_tab(); 
+        erase(first++);
+     //  this->print_tab();
          
-    if (first != this->end())
-            first++;
+   // if (first != this->end())
     }
+  // exit(1);
 }
 
 void swap(map<Key,T,Compare,Allocator>& r)
@@ -770,13 +868,15 @@ void clear()
 {
     while (_size)
     {
-        this->print_tab();
-        std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
-
+      //  this->print_tab();
+     //  std::cout << _ptrdeb->type.first << "  " << _size << std::endl;
+      
         erase(iterator(_ptrdeb));
-                this->print_tab();
-         std::cout << "INCROYABLE  " << _size << std::endl;
+        
+      //          this->print_tab();
+     //    std::cout << "INCROYABLE  " << _size << std::endl;
     }
+    
     _node = NULL;
     _ptrdeb = _ptrfin;
 }

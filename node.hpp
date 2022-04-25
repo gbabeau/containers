@@ -96,13 +96,16 @@ namespace ft
             node* operator++()
             {
                  node *tmp = this;
-           // std::cout << "AAAAAl" << tmp->type.first << std::endl;
+          
             if (tmp->rigth != NULL )
             {
+              
                 tmp = tmp->rigth;
+              
                 while (tmp->left)
                     tmp = tmp->left;
-
+              
+                
               //  this = tmp;
                 return tmp;
             }

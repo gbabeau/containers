@@ -35,6 +35,7 @@ template< class T>
     Iterator_map& operator++() 
     {
        p = ++(*p);
+
         return *this;
 /*
         if (p->rigth != NULL)
