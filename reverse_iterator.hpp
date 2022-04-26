@@ -1,6 +1,8 @@
 #ifndef REVERSE_ITERATOR_HPP
 #define REVERSE_ITERATOR_HPP
 
+#include <iterator>
+#include "iterator.hpp"
 namespace ft
 {
 template<class Iterator> struct iterator_traits {
@@ -33,6 +35,7 @@ typename iterator_traits<Iterator>::reference>
     reverse_iterator() : _current() {}
     explicit reverse_iterator(Iterator x)  : _current(x) {}
     template <class U> reverse_iterator(const reverse_iterator<U>& u) : _current(u.base()) {}
+  //  reverse_iterator(const reverse_iterator & u) : _current(u.base()) {}
 //    reverse_iterator& operator=(const reverse_iterator& mit){ p = mit.p; return *this;}
     pointer operator->() const {return &(operator*());}
     Iterator base() const {return _current;}

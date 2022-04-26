@@ -80,7 +80,7 @@ namespace ft
                 {
                     
                     _alloc.deallocate(_p ,_capacity);
-                   _p =  _alloc.allocate(x._capacity - _capacity);
+                   _p =  _alloc.allocate(x._capacity);
                     _capacity = x._capacity;
                 }
                 _size = x._size; 
@@ -107,7 +107,7 @@ namespace ft
 
         void resize (size_type n, value_type val = value_type()) 
         {
-            if (n > _capacity)
+            if (n > _size)
             {
                             if ( _capacity < _size + n)
             {
@@ -120,7 +120,7 @@ namespace ft
                     this->_alloc.construct(&_p[i] , val); 
                 _size = n;
             }
-            else if ( n < _capacity)
+            else if ( n < _size)
             {
              if (n > _size)
              {

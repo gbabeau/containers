@@ -2,6 +2,9 @@
 #define NODE_HPP
 #define ROUGE 1
 #define NOIR 2
+
+#include "pair.hpp"
+
 namespace ft
 {
     template <class T>
@@ -9,7 +12,7 @@ namespace ft
     {   
     public:
         typedef  T t_type;
-    t_type       type;
+    T       type;
     int     color;
     node    *left;
     node    *rigth;

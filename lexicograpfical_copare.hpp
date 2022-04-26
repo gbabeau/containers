@@ -1,3 +1,5 @@
+#ifndef  LEXICOGRAPFICAL_COPARE_HPP
+# define LEXICOGRAPFICAL_COPARE_HPP
 #include "pair.hpp"
 
 namespace ft 
@@ -41,7 +43,7 @@ template <class InputIterator1, class InputIterator2>
                     
                     while (first1!=last1)
                         {
-                        if (first2==last2 || *first2<*first1) return false;
+                        if (first2==last2 || *first2 <  *first1) return false;
                             else if (*first1<*first2) return true;
                         ++first1; ++first2;
                         }
@@ -61,3 +63,4 @@ template <class InputIterator1, class InputIterator2, class Compare>
                 }
 
 }
+#endif

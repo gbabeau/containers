@@ -65,15 +65,23 @@ void	print(ft::map<Key, T>& lst)
 
 int main ()
 {
+  const ft::pair<int , int > a(10,10);
+    const ft::pair<int , int > b(100, 0);
+    if (a < b)
+      return 0;
   int i;
-  map<int,int> mymap;
-
-  if (mymap.max_size()>100)
+  ft::map<int,int> mymap;
+  ft::map<int,int> mymap2;
+  if (mymap.max_size()>10)
   {
-    for (i=0; i<10; i++) mymap[i]=0;
+    for (i=0; i< 1000; i++) mymap[i]=0;
     std::cout << "The map contains 1000 elements.\n";
   }
   else std::cout << "The map could not hold 1000 elements.\n";
+  mymap2[151] = 151;
 
+  if (mymap == mymap2)
+    return 0;
+  
   return 0;
 }
